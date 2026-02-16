@@ -1,0 +1,112 @@
+[
+  {
+    "id": "user-1770806788599",
+    "username": "umidbek",
+    "email": "umid@gmail.com",
+    "password": "$2b$10$3zmSzL/giPQ61CbebX3ZxOdgHZgocOsHBg89dWJ3D3861uD9SblYS",
+    "level": 1,
+    "xp": 0,
+    "questionsSolved": 0,
+    "dayStreak": 0,
+    "joinedAt": "2026-02-11T10:46:28.599Z"
+  },
+  {
+    "id": "user-1770833039027",
+    "username": "test",
+    "email": null,
+    "password": "test",
+    "level": 1,
+    "xp": 0,
+    "questionsSolved": 0,
+    "dayStreak": 0,
+    "joinedAt": "2026-02-11T18:03:59.027Z"
+  },
+  {
+    "id": "user-1770872822830",
+    "username": "test1",
+    "email": null,
+    "password": "test2",
+    "level": 1,
+    "xp": 0,
+    "questionsSolved": 0,
+    "dayStreak": 0,
+    "joinedAt": "2026-02-12T05:07:02.830Z"
+  },
+  {
+    "id": "user-1770893404688",
+    "username": "javohir",
+    "email": "javohir@gmail.com",
+    "password": "javohir2020202",
+    "level": 1,
+    "xp": 0,
+    "questionsSolved": 0,
+    "dayStreak": 0,
+    "joinedAt": "2026-02-12T10:50:04.688Z"
+  },
+  {
+    "id": "user-1770893536042",
+    "username": "javohir1",
+    "password": "javohir2020202",
+    "level": 1,
+    "xp": 0,
+    "questionsSolved": 0,
+    "dayStreak": 0,
+    "joinedAt": "2026-02-12T10:52:16.042Z"
+  },
+  {
+    "id": "user-1770896437224",
+    "username": "bekali",
+    "password": "bekalipass",
+    "level": 1,
+    "xp": 0,
+    "questionsSolved": 0,
+    "dayStreak": 0,
+    "joinedAt": "2026-02-12T11:40:37.224Z"
+  },
+  {
+    "id": "user-1770896630584",
+    "username": "og'abekijon",
+    "password": "og'abekkkkkkk",
+    "level": 1,
+    "xp": 0,
+    "questionsSolved": 0,
+    "dayStreak": 0,
+    "joinedAt": "2026-02-12T11:43:50.584Z"
+  },
+  {
+    "id": "user-1770982223424",
+    "username": "og'abekijon11",
+    "password": "$2b$10$xtdFdA2JouzLGkXixqn0WOdzzOHC7HzQp0qkfVROR7ju9bs7NkPi.",
+    "email": null,
+    "grade": 11,
+    "level": 1,
+    "xp": 0,
+    "questionsSolved": 0,
+    "dayStreak": 0,
+    "joinedAt": "2026-02-13T11:30:23.424Z"
+  },
+  {
+    "id": "user-1770982255222",
+    "username": "og'abekijon14",
+    "password": "$2b$10$jqOdmpXd8ufMlOlsEhEG4eSBkjyL0V.CuW.BnZOVQAZdIHledkUBa",
+    "email": null,
+    "grade": 14,
+    "level": 1,
+    "xp": 0,
+    "questionsSolved": 0,
+    "dayStreak": 0,
+    "joinedAt": "2026-02-13T11:30:55.222Z"
+  },
+  {
+    "id": "user-1770982267070",
+    "username": "og'abekijon4",
+    "password": "$2b$10$FWOKTSn/bm4HO6VMGRUT4.yUDvFd9XJYGZbE7EuoupCmkrdDzv4fu",
+    "email": null,
+    "grade": 4,
+    "level": 1,
+    "xp": 0,
+    "questionsSolved": 0,
+    "dayStreak": 0,
+    "joinedAt": "2026-02-13T11:31:07.070Z"
+  }
+]
