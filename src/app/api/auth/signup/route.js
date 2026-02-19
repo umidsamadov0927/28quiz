@@ -15,7 +15,7 @@ async function getUsers() {
 
 export async function POST(req) {
     try {
-        const { username, email, password, grade } = await req.json();
+        const { username, password, grade } = await req.json();
 
         if (!username || !password || !grade) {
             return new Response(JSON.stringify({ message: 'Username parol va sinf majburiy' }), { status: 400 });
@@ -35,7 +35,6 @@ export async function POST(req) {
             id: `user-${Date.now()}`,
             username,
             password: hashedPassword,
-            email: email || null,
             grade: parseInt(grade, 10),
             level: 1,
             xp: 0,

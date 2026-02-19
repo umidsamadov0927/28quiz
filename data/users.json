@@ -108,5 +108,28 @@
     "questionsSolved": 0,
     "dayStreak": 0,
     "joinedAt": "2026-02-13T11:31:07.070Z"
+  },
+  {
+    "id": "user-1771264213307",
+    "username": "hkx",
+    "password": "$2b$10$QDflyPHBdEWd1uD0MURshuMqLYfLJ05fjHNXWyEl7J8yD6Lpk0Pca",
+    "email": null,
+    "grade": 2,
+    "level": 1,
+    "xp": 0,
+    "questionsSolved": 0,
+    "dayStreak": 0,
+    "joinedAt": "2026-02-16T17:50:13.307Z"
+  },
+  {
+    "id": "user-1771325954301",
+    "username": "umidjon",
+    "password": "$2b$10$r2jPDUa2SK5MqWAuTpXUs..8u4IPf8Kss0gy3ErExAZ./bMv8WUyW",
+    "grade": 10,
+    "level": 1,
+    "xp": 0,
+    "questionsSolved": 0,
+    "dayStreak": 0,
+    "joinedAt": "2026-02-17T10:59:14.301Z"
   }
 ]
