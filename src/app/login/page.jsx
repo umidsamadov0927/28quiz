@@ -42,7 +42,7 @@ return (
                     style={styles.input}
                 />
                 <input
-                    type="text"
+                    type="password"
                     placeholder="Parol"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
