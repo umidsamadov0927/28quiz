@@ -14,7 +14,7 @@
     "id": "user-1770833039027",
     "username": "test",
     "email": null,
-    "password": "test",
+    "password": "$2b$10$f3WChPf/SvAlKuN5Arv/7eYGbfXiHGMF7kSh0w5k.bdgV/XiNZEvy",
     "level": 1,
     "xp": 0,
     "questionsSolved": 0,
@@ -25,7 +25,7 @@
     "id": "user-1770872822830",
     "username": "test1",
     "email": null,
-    "password": "test2",
+    "password": "$2b$10$JqmtCwCS34hOSV0S6jgQ2.flSs/pxDj2RVE7t08efHhCsxSIHsxaG",
     "level": 1,
     "xp": 0,
     "questionsSolved": 0,
@@ -36,7 +36,7 @@
     "id": "user-1770893404688",
     "username": "javohir",
     "email": "javohir@gmail.com",
-    "password": "javohir2020202",
+    "password": "$2b$10$snipdomJSYXvthynP5A7mOdXeTjx6fpoi7WMGhnU5c8eAjTdUTvYy",
     "level": 1,
     "xp": 0,
     "questionsSolved": 0,
@@ -46,7 +46,7 @@
   {
     "id": "user-1770893536042",
     "username": "javohir1",
-    "password": "javohir2020202",
+    "password": "$2b$10$qniwlZA8gDiD5DCJut6Gz.C31A8q7eBLMBckCqeGPdMEqOwKJkwb.",
     "level": 1,
     "xp": 0,
     "questionsSolved": 0,
@@ -56,7 +56,7 @@
   {
     "id": "user-1770896437224",
     "username": "bekali",
-    "password": "bekalipass",
+    "password": "$2b$10$ZCR9iwHm4l1..RgmKFO3SeyPVVIPSgPe8FvmImri/LzCdrXKE6Vsi",
     "level": 1,
     "xp": 0,
     "questionsSolved": 0,
@@ -66,7 +66,7 @@
   {
     "id": "user-1770896630584",
     "username": "og'abekijon",
-    "password": "og'abekkkkkkk",
+    "password": "$2b$10$QonDq960aqZe1RqBRDxO5O/rCKwu6zGDi8gVpjTa2eC8/CwBcnPBu",
     "level": 1,
     "xp": 0,
     "questionsSolved": 0,
@@ -131,5 +131,16 @@
     "questionsSolved": 0,
     "dayStreak": 0,
     "joinedAt": "2026-02-17T10:59:14.301Z"
+  },
+  {
+    "id": "user-1772356026667",
+    "username": "efr",
+    "password": "$2b$10$BkIqO/CmnWA4W6OYTKQZp.BqxEmWHrKTF127iFn11aIAdPD1vzAiC",
+    "grade": 1,
+    "level": 1,
+    "xp": 0,
+    "questionsSolved": 0,
+    "dayStreak": 0,
+    "joinedAt": "2026-03-01T09:07:06.667Z"
   }
 ]
