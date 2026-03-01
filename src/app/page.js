@@ -1,13 +1,21 @@
-export default function Home() {
+function Home() {
 
-    
+
+
+
 
 
     return (
         <>
-            <div className="text-red-500">
+            <div>
                 hello
+
+            <div>
+                <h1>Asosiy Sahifa</h1>
+
             </div>
         </>
     )
 }
+
+export default Home;
