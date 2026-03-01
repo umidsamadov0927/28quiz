@@ -1,5 +1,5 @@
 [build]
-  command = "vite build"
+  command = "next build"
   publish = ".next"
 
 [[plugins]]
