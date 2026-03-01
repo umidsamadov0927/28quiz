@@ -1,20 +1,15 @@
-import { promises as fs } from 'fs';
-import path from 'path';
-
-
-const usersFilePath = path.join(process.cwd(), 'data', 'users.json');
-
+import { connectDB } from '../../config/mongodb.js';
+import { User } from '../../models/User.js';
 
 export async function GET() {
     try {
-        const data = await fs.readFile(usersFilePath, 'utf-8');
-        const users = JSON.parse(data);
+        await connectDB();
 
-        //const usersWithoutPassword = users.map(({ password, ...user }) => user);
-
+        const users = await User.find().select('-password');
         return new Response(JSON.stringify({ users }), { status: 200 });
+
     } catch (error) {
-        console.error(error);
+        console.error('Get users error:', error);
         return new Response(JSON.stringify({ message: "Foydalanuvchilarni o'qishda xato yuz berdi" }), { status: 500 });
     }
 }

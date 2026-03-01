@@ -1,10 +1,10 @@
-import { promises as fs } from 'fs';
-import path from 'path';
-
-const usersFilePath = path.join(process.cwd(), 'data', 'users.json');
+import { connectDB } from '../config/mongodb.js';
+import { User } from '../models/User.js';
 
 export async function GET(req) {
     try {
+        await connectDB();
+
         const { searchParams } = new URL(req.url);
         const userId = searchParams.get('userId');
 
@@ -12,20 +12,18 @@ export async function GET(req) {
             return new Response(JSON.stringify({ message: 'Foydalanuvchi IDsi kerak!' }), { status: 400 });
         }
 
-        const data = await fs.readFile(usersFilePath, 'utf-8');
-        const users = JSON.parse(data);
-        const user = users.find(u => u.id === userId);  
-
+        const user = await User.findById(userId);
         if (!user) {
             return new Response(JSON.stringify({ message: 'Foydalanuvchi topilmadi!' }), { status: 404 });
         }
 
+        // Get all users sorted by XP for ranking
+        const allUsers = await User.find().sort({ xp: -1 });
+        const rank = allUsers.findIndex(u => u._id.toString() === userId) + 1;
 
-        const sortedUsers = users.sort((a, b) => b.xp - a.xp);
-        const rank = sortedUsers.findIndex(u => u.id === userId) + 1;
         const dashboardData = {
             totalXp: user.xp,
-            quesstionsSolved: user.questionsSolved,
+            questionsSolved: user.questionsSolved,
             dayStreak: user.dayStreak,
             globalRank: rank,
             weeklyActivity: [
@@ -39,7 +37,7 @@ export async function GET(req) {
         return new Response(JSON.stringify(dashboardData), { status: 200 });
 
     } catch (error) {
-        console.error(error);
+        console.error('Dashboard error:', error);
         return new Response(JSON.stringify({ message: 'Server xatosi yuz berdi' }), { status: 500 });
     }
 }
