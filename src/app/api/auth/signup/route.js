@@ -51,7 +51,7 @@ export async function POST(req) {
 
 
     } catch (error) {
-        console.error(error);
-        return new Response(JSON.stringify({ message: 'Server xatosi yuz berdi' }), { status: 500 });
+        console.error('Signup error:', error);
+        return new Response(JSON.stringify({ message: 'Server xatosi yuz berdi: ' + error.message }), { status: 500 });
     }
 }
