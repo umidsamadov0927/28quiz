@@ -1,13 +1,19 @@
-export default function Home() {
+function Home() {
 
-    
+
+
+
 
 
     return (
         <>
             <div>
-                hello
+                <h1>Asosiy Sahifa</h1>
             </div>
         </>
     )
+
+
+
+
 }
