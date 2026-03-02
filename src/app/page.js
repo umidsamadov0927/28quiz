@@ -1,19 +1,7 @@
+import Dashboard from "./dashboard/page";
+
 function Home() {
-
-
-
-
-
-
-    return (
-        <>
-            <div>
-                <h1>Asosiy Sahifa</h1>
-            </div>
-        </>
-    )
-
-
+    return ( <Dashboard /> )
 }
 
 export default Home;
