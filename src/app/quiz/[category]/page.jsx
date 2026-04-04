@@ -167,34 +167,32 @@ export default function QuizCategoryPage() {
     return (
         <div className="min-h-screen bg-gray-950 flex flex-col">
 
-            {/* ── Top bar ────────────────────────────────── */}
-            <div className="bg-gray-900 border-b border-gray-800 px-4 sm:px-6 py-3">
+            {/* ── Top bar ─────────────────────────────── */}
+            <div className="bg-gray-900 border-b border-gray-800 px-3 sm:px-6 py-3">
                 <div className="mx-auto max-w-2xl">
-
-                    {/* Row 1: back + category + xp */}
-                    <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-between mb-2.5">
+                        <div className="flex items-center gap-2">
                             <button
                                 onClick={() => router.push('/quiz')}
-                                className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white transition-colors"
+                                className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white transition-colors shrink-0"
                             >
                                 <ArrowLeft size={15} />
                             </button>
-                            <div>
-                                <p className="text-white font-semibold text-sm leading-tight">{category}</p>
+                            <div className="min-w-0">
+                                <p className="text-white font-semibold text-sm leading-tight truncate max-w-[120px] sm:max-w-none">{category}</p>
                                 <p className="text-gray-500 text-xs">{total} ta savol</p>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2">
                             {current.xpReward > 0 && (
-                                <span className="flex items-center gap-1 text-xs text-green-400 font-bold bg-green-900/20 px-2.5 py-1 rounded-lg border border-green-900/40">
-                                    <Zap size={11} /> +{current.xpReward} XP
+                                <span className="flex items-center gap-1 text-xs text-green-400 font-bold bg-green-900/20 px-2 py-1 rounded-lg border border-green-900/40">
+                                    <Zap size={10} /> +{current.xpReward} XP
                                 </span>
                             )}
 
                             {timeLeft !== null && (
-                                <div className={`flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-lg border transition-colors
+                                <div className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-lg border transition-colors
                                     ${timeLeft <= Math.floor((current.time || 30) * 0.25)
                                         ? 'bg-red-900/40 border-red-700 text-red-400 animate-pulse'
                                         : timeLeft <= Math.floor((current.time || 30) * 0.5)
@@ -202,19 +200,17 @@ export default function QuizCategoryPage() {
                                         : 'bg-gray-800 border-gray-700 text-gray-300'
                                     }`}
                                 >
-                                    <Clock size={11} />
+                                    <Clock size={10} />
                                     {timeLeft}s
                                 </div>
                             )}
 
-                            <span className="text-gray-400 text-sm font-medium">
-                                <span className="text-white font-bold">{index + 1}</span>
-                                <span> / {total}</span>
+                            <span className="text-gray-400 text-sm font-medium shrink-0">
+                                <span className="text-white font-bold">{index + 1}</span>/{total}
                             </span>
                         </div>
                     </div>
 
-                    {/* Progress bar */}
                     <div className="h-1.5 w-full bg-gray-800 rounded-full overflow-hidden">
                         <div
                             className="h-full bg-gradient-to-r from-green-600 to-green-400 rounded-full transition-all duration-500 ease-out"
@@ -224,50 +220,47 @@ export default function QuizCategoryPage() {
                 </div>
             </div>
 
-            {/* ── Question body ───────────────────────────── */}
-            <div className="px-4 sm:px-6 py-8">
+            {/* ── Question body ─────────────────────── */}
+            <div className="px-3 sm:px-6 py-4 sm:py-8 flex-1">
                 <div className="mx-auto w-full max-w-2xl">
 
                     {/* Question card */}
-                    <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 mb-6">
-                        <div className="flex items-center gap-2 mb-4">
-                            <span className="text-xs font-semibold text-gray-500 bg-gray-800 px-2.5 py-1 rounded-lg">
+                    <div className="bg-gray-900 border border-gray-800 rounded-2xl p-4 sm:p-6 mb-4">
+                        <div className="flex items-center gap-2 mb-3">
+                            <span className="text-xs font-semibold text-gray-500 bg-gray-800 px-2 py-1 rounded-lg">
                                 Savol {index + 1}
                             </span>
                             {current.difficulty && (
-                                <span className={`text-xs font-semibold px-2.5 py-1 rounded-lg ${diff.cls}`}>
+                                <span className={`text-xs font-semibold px-2 py-1 rounded-lg ${diff.cls}`}>
                                     {diff.label}
                                 </span>
                             )}
                         </div>
-                        <h2 className="text-white text-xl sm:text-2xl font-semibold leading-relaxed">
+                        <h2 className="text-white text-base sm:text-xl font-semibold leading-relaxed">
                             {current.question}
                         </h2>
                     </div>
 
                     {/* Options */}
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-2.5">
                         {current.options.map((opt, i) => {
-                            const isSelected    = selected === i;
-                            const isCorrectOpt  = answered && i === current.correctAnswer;
-                            const isWrong       = answered && isSelected && !isCorrectOpt;
+                            const isSelected   = selected === i;
+                            const isCorrectOpt = answered && i === current.correctAnswer;
+                            const isWrong      = answered && isSelected && !isCorrectOpt;
 
-                            // container style
                             let container = 'border-gray-800 bg-gray-900 hover:border-gray-600 hover:bg-gray-800/80 cursor-pointer';
                             if (isCorrectOpt) container = 'border-green-500 bg-green-900/20 cursor-default';
                             else if (isWrong) container = 'border-red-500 bg-red-900/20 cursor-default';
                             else if (isSelected) container = 'border-green-500/60 bg-green-900/10 cursor-pointer';
 
-                            // label badge style
                             let badge = 'bg-gray-800 text-gray-400';
                             if (isCorrectOpt) badge = 'bg-green-500 text-white';
-                            else if (isWrong)   badge = 'bg-red-500 text-white';
+                            else if (isWrong)    badge = 'bg-red-500 text-white';
                             else if (isSelected) badge = 'bg-green-600 text-white';
 
-                            // text style
                             let textCls = 'text-gray-200';
                             if (isCorrectOpt) textCls = 'text-green-300';
-                            else if (isWrong)   textCls = 'text-red-300';
+                            else if (isWrong)    textCls = 'text-red-300';
                             else if (isSelected) textCls = 'text-white';
 
                             const icon = isCorrectOpt
@@ -283,19 +276,14 @@ export default function QuizCategoryPage() {
                                     key={i}
                                     onClick={() => !answered && setSelected(i)}
                                     disabled={answered}
-                                    className={`group flex items-center gap-4 rounded-xl border-2 px-5 py-4 text-left
-                                        transition-all duration-200 ${container}
-                                        ${!answered && !isSelected ? 'hover:scale-[1.01]' : ''}
-                                    `}
+                                    className={`group flex items-center gap-3 rounded-xl border-2 px-3 sm:px-5 py-3 sm:py-4 text-left transition-all duration-200 ${container}`}
                                 >
-                                    <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-all duration-200 ${badge}`}>
+                                    <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl transition-all duration-200 ${badge}`}>
                                         {icon}
                                     </span>
-                                    <span className={`font-medium leading-relaxed transition-colors duration-200 ${textCls}`}>
+                                    <span className={`font-medium text-sm sm:text-base leading-relaxed transition-colors duration-200 ${textCls}`}>
                                         {opt}
                                     </span>
-
-                                    {/* Right indicator */}
                                     {isCorrectOpt && (
                                         <span className="ml-auto text-xs font-semibold text-green-400 shrink-0">To'g'ri!</span>
                                     )}
@@ -307,48 +295,35 @@ export default function QuizCategoryPage() {
                         })}
                     </div>
 
-                    {/* ── Bottom navigation ───────────────────── */}
-                    <div className="mt-5 flex items-center justify-between gap-4">
-
-                        {/* Mini progress dots (max 10) */}
+                    {/* Bottom nav */}
+                    <div className="mt-4 flex items-center justify-between gap-3">
                         <div className="hidden sm:flex items-center gap-1">
                             {Array.from({ length: Math.min(total, 10) }, (_, i) => (
                                 <div
                                     key={i}
                                     className={`rounded-full transition-all duration-300 ${
-                                        i < index
-                                            ? 'w-2 h-2 bg-green-500'
-                                            : i === index
-                                            ? 'w-3 h-3 bg-green-400 ring-2 ring-green-400/30'
-                                            : 'w-2 h-2 bg-gray-700'
+                                        i < index ? 'w-2 h-2 bg-green-500'
+                                        : i === index ? 'w-3 h-3 bg-green-400 ring-2 ring-green-400/30'
+                                        : 'w-2 h-2 bg-gray-700'
                                     }`}
                                 />
                             ))}
-                            {total > 10 && (
-                                <span className="text-gray-600 text-xs ml-1">+{total - 10}</span>
-                            )}
+                            {total > 10 && <span className="text-gray-600 text-xs ml-1">+{total - 10}</span>}
                         </div>
 
                         <button
                             onClick={handleNext}
-                            className={`ml-auto flex items-center gap-2 rounded-xl px-7 py-3.5 font-semibold text-white
+                            className={`ml-auto flex items-center gap-2 rounded-xl px-5 sm:px-7 py-3 sm:py-3.5 font-semibold text-white text-sm sm:text-base
                                 transition-all duration-200 hover:scale-[1.02]
                                 ${isLastQuestion
                                     ? 'bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 shadow-lg shadow-green-900/30'
                                     : 'bg-gray-700 hover:bg-gray-600'
-                                }
-                            `}
+                                }`}
                         >
                             {isLastQuestion ? (
-                                <>
-                                    <Trophy className="w-4 h-4" />
-                                    Yakunlash
-                                </>
+                                <><Trophy className="w-4 h-4" /> Yakunlash</>
                             ) : (
-                                <>
-                                    Keyingi
-                                    <ChevronRight className="w-4 h-4" />
-                                </>
+                                <><span>Keyingi</span><ChevronRight className="w-4 h-4" /></>
                             )}
                         </button>
                     </div>

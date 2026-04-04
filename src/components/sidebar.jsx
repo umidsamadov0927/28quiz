@@ -29,6 +29,8 @@ export default function Sidebar({ isExpanded }) {
     const router = useRouter();
     const [currentUser, setCurrentUser] = useState(null);
     const [tooltip, setTooltip] = useState({ visible: false, text: '', top: 0, left: 0 });
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const [loggingOut, setLoggingOut] = useState(false);
 
     useEffect(() => {
         try {
@@ -49,14 +51,16 @@ export default function Sidebar({ isExpanded }) {
     };
     const hideTooltip = () => setTooltip((t) => ({ ...t, visible: false }));
 
-    const handleLogout = async (e) => {
-        e.preventDefault();
+    const handleLogout = async () => {
+        setLoggingOut(true);
         try {
             await fetch('/api/auth/logout', { method: 'POST' });
             Cookies.remove('session_token');
             router.push('/login');
         } catch (error) {
             console.error('Logout failed:', error);
+            setLoggingOut(false);
+            setShowLogoutModal(false);
         }
     };
 
@@ -74,7 +78,7 @@ export default function Sidebar({ isExpanded }) {
         if (item.key === 'chiqish') {
             return (
                 <button
-                    onClick={handleLogout}
+                    onClick={() => setShowLogoutModal(true)}
                     onMouseEnter={(e) => showTooltip(e, item.label)}
                     onMouseLeave={hideTooltip}
                     className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-gray-400 hover:text-red-400 hover:bg-gray-800"
@@ -146,8 +150,8 @@ export default function Sidebar({ isExpanded }) {
             <div className={`hidden md:block shrink-0 transition-all duration-300 ${isExpanded ? 'w-56' : 'w-[72px]'}`} />
 
             {/* ── Mobile bottom nav ───────────────────────────── */}
-            <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-gray-900 border-t border-gray-800 safe-area-pb">
-                <div className="flex items-stretch">
+            <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-gray-900 border-t border-gray-800">
+                <div className="flex items-stretch h-16">
                     {visibleMenu.map((item) => {
                         const isActive = pathname === item.route;
                         const Icon = item.icon;
@@ -155,21 +159,19 @@ export default function Sidebar({ isExpanded }) {
                             <Link
                                 key={item.key}
                                 href={item.route}
-                                className={`flex-1 flex flex-col items-center justify-center py-2 gap-0.5 transition-colors ${
+                                className={`flex-1 flex items-center justify-center transition-colors ${
                                     isActive ? 'text-green-400' : 'text-gray-500 hover:text-gray-300'
                                 }`}
                             >
-                                <Icon size={20} />
-                                <span className="text-[9px] font-medium leading-none truncate max-w-[52px] text-center">{item.label}</span>
+                                <Icon size={24} />
                             </Link>
                         );
                     })}
                     <button
-                        onClick={handleLogout}
-                        className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 text-gray-500 hover:text-red-400 transition-colors"
+                        onClick={() => setShowLogoutModal(true)}
+                        className="flex-1 flex items-center justify-center text-gray-500 hover:text-red-400 transition-colors"
                     >
-                        <LogOut size={20} />
-                        <span className="text-[9px] font-medium leading-none">Chiqish</span>
+                        <LogOut size={24} />
                     </button>
                 </div>
             </nav>
@@ -181,6 +183,50 @@ export default function Sidebar({ isExpanded }) {
                     style={{ top: tooltip.top, left: tooltip.left }}
                 >
                     {tooltip.text}
+                </div>
+            )}
+
+            {/* Logout confirmation modal */}
+            {showLogoutModal && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+                    {/* Backdrop */}
+                    <div
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        onClick={() => !loggingOut && setShowLogoutModal(false)}
+                    />
+                    {/* Modal */}
+                    <div className="relative bg-gray-900 border border-gray-800 rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+                        <div className="flex items-center justify-center w-12 h-12 bg-red-900/30 border border-red-800/50 rounded-2xl mx-auto mb-4">
+                            <LogOut size={22} className="text-red-400" />
+                        </div>
+                        <h2 className="text-white font-bold text-lg text-center mb-1">Chiqishni tasdiqlang</h2>
+                        <p className="text-gray-400 text-sm text-center mb-6">
+                            Hisobingizdan chiqmoqchimisiz?
+                        </p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setShowLogoutModal(false)}
+                                disabled={loggingOut}
+                                className="flex-1 py-2.5 rounded-xl border border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white font-semibold text-sm transition-colors disabled:opacity-40"
+                            >
+                                Bekor qilish
+                            </button>
+                            <button
+                                onClick={handleLogout}
+                                disabled={loggingOut}
+                                className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+                            >
+                                {loggingOut ? (
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                ) : (
+                                    <>
+                                        <LogOut size={15} />
+                                        Chiqish
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </>

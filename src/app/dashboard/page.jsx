@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Zap, TrendingUp, Clock, Code, Flame } from 'lucide-react';
 import StatsCards from '@/components/dashboard/statsCards';
 import ActivityChart from '@/components/dashboard/activityChart';
@@ -12,19 +12,18 @@ const difficultyStyle = {
 };
 
 export default function Dashboard() {
-    const [user, setUser]             = useState(null);
-    const [todayXp, setTodayXp]       = useState(0);
+    const [user, setUser]               = useState(null);
+    const [todayXp, setTodayXp]         = useState(0);
     const [leaderboard, setLeaderboard] = useState([]);
-    const [activity, setActivity]     = useState([]);
-    const [myRank, setMyRank]         = useState(null);
+    const [activity, setActivity]       = useState([]);
+    const [myRank, setMyRank]           = useState(null);
 
-    const [questions, setQuestions]   = useState([]);
-    const [qIndex, setQIndex]         = useState(0);
-    const [selected, setSelected]     = useState(null);
-    const [answered, setAnswered]     = useState(false);
-    const [qLoading, setQLoading]     = useState(true);
+    const [questions, setQuestions]     = useState([]);
+    const [qIndex, setQIndex]           = useState(0);
+    const [selected, setSelected]       = useState(null);
+    const [answered, setAnswered]       = useState(false);
+    const [qLoading, setQLoading]       = useState(true);
 
-    // Load all data in parallel
     useEffect(() => {
         async function load() {
             try {
@@ -106,19 +105,19 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="p-6 space-y-6 bg-gray-950 min-h-screen">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 bg-gray-950 min-h-screen">
 
             {/* Welcome */}
-            <div className="flex items-start justify-between">
+            <div className="flex items-start justify-between gap-3">
                 <div>
-                    <h1 className="text-2xl font-bold text-white">
+                    <h1 className="text-xl sm:text-2xl font-bold text-white">
                         Xush kelibsiz, {user ? user.name : 'do\'st'}!
                     </h1>
-                    <p className="text-gray-400 text-sm mt-1">Bugun ham bilimingizni oshiring</p>
+                    <p className="text-gray-400 text-xs sm:text-sm mt-1">Bugun ham bilimingizni oshiring</p>
                 </div>
-                <div className="flex items-center gap-1.5 bg-green-950 border border-green-900 text-green-400 text-sm font-semibold px-3 py-1.5 rounded-lg">
-                    <Zap size={14} />
-                    +{todayXp} XP bugun
+                <div className="flex items-center gap-1 sm:gap-1.5 bg-green-950 border border-green-900 text-green-400 text-xs sm:text-sm font-semibold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg shrink-0">
+                    <Zap size={13} />
+                    +{todayXp} XP
                 </div>
             </div>
 
@@ -133,10 +132,10 @@ export default function Dashboard() {
             />
 
             {/* Main Grid */}
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
 
-                {/* Left 2/3 */}
-                <div className="col-span-2 space-y-6">
+                {/* Left — activity + quiz */}
+                <div className="lg:col-span-2 space-y-4 sm:space-y-6">
                     <ActivityChart
                         data={activity.length ? activity.map(a => ({
                             day: new Date(a.date).toLocaleDateString('en-US', { weekday: 'short' }),
@@ -145,11 +144,11 @@ export default function Dashboard() {
                     />
 
                     {/* Quick Quiz */}
-                    <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
-                        <div className="flex items-center justify-between mb-5">
-                            <h3 className="font-semibold text-white">Tez Quiz</h3>
-                            <span className="flex items-center gap-1.5 text-gray-400 text-xs">
-                                <TrendingUp size={14} />
+                    <div className="bg-gray-900 border border-gray-800 rounded-2xl p-4 sm:p-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-semibold text-white text-sm sm:text-base">Tez Quiz</h3>
+                            <span className="flex items-center gap-1 text-gray-400 text-xs">
+                                <TrendingUp size={13} />
                                 {questions.length} ta savol
                             </span>
                         </div>
@@ -163,33 +162,33 @@ export default function Dashboard() {
                             <p className="text-gray-500 text-sm py-6">Savollar topilmadi</p>
                         ) : (
                             <>
-                                <div className="flex items-center gap-3 mb-4">
-                                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-lg ${difficultyStyle[question.difficulty] || difficultyStyle.Easy}`}>
+                                <div className="flex flex-wrap items-center gap-2 mb-3">
+                                    <span className={`text-xs font-semibold px-2 py-1 rounded-lg ${difficultyStyle[question.difficulty] || difficultyStyle.Easy}`}>
                                         {question.difficulty || 'Easy'}
                                     </span>
-                                    <span className="text-gray-400 text-sm">{question.category}</span>
-                                    <div className="ml-auto flex items-center gap-3 text-xs text-gray-400">
+                                    <span className="text-gray-400 text-xs">{question.category}</span>
+                                    <div className="ml-auto flex items-center gap-2 text-xs text-gray-400">
                                         <span className="flex items-center gap-1">
-                                            <Zap size={12} className="text-green-400" /> +{question.xpReward || 0} XP
+                                            <Zap size={11} className="text-green-400" /> +{question.xpReward || 0} XP
                                         </span>
                                         <span className="flex items-center gap-1">
-                                            <Clock size={12} /> {question.time || 30}s
+                                            <Clock size={11} /> {question.time || 30}s
                                         </span>
                                     </div>
                                 </div>
 
-                                <p className="text-white font-medium mb-3">{question.question}</p>
+                                <p className="text-white font-medium mb-3 text-sm sm:text-base">{question.question}</p>
 
                                 {question.code && (
-                                    <div className="bg-gray-800 rounded-xl p-4 mb-4">
+                                    <div className="bg-gray-800 rounded-xl p-3 mb-3">
                                         <div className="flex items-center gap-2 text-gray-500 text-xs mb-2">
-                                            <Code size={12} /> Code
+                                            <Code size={11} /> Code
                                         </div>
-                                        <pre className="text-green-400 text-sm font-mono whitespace-pre-wrap">{question.code}</pre>
+                                        <pre className="text-green-400 text-xs font-mono whitespace-pre-wrap overflow-x-auto">{question.code}</pre>
                                     </div>
                                 )}
 
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                     {(question.options || []).map((opt, i) => {
                                         let style = 'bg-gray-800 border-gray-700 text-gray-300 hover:border-gray-600';
                                         if (answered) {
@@ -202,7 +201,7 @@ export default function Dashboard() {
                                             <button
                                                 key={i}
                                                 onClick={() => !answered && setSelected(i)}
-                                                className={`px-4 py-3 rounded-xl text-sm font-medium text-left transition-all border ${style}`}
+                                                className={`px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-left transition-all border ${style}`}
                                             >
                                                 {opt}
                                             </button>
@@ -210,19 +209,19 @@ export default function Dashboard() {
                                     })}
                                 </div>
 
-                                <div className="mt-4">
+                                <div className="mt-3">
                                     {!answered ? (
                                         <button
                                             onClick={handleSubmit}
                                             disabled={selected === null}
-                                            className="w-full bg-green-600 hover:bg-green-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-xl transition-colors"
+                                            className="w-full bg-green-600 hover:bg-green-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
                                         >
                                             Javobni Yuborish
                                         </button>
                                     ) : (
                                         <button
                                             onClick={handleNext}
-                                            className="w-full bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 rounded-xl transition-colors"
+                                            className="w-full bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
                                         >
                                             Keyingi Savol →
                                         </button>
@@ -233,31 +232,31 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                {/* Right 1/3 — Leaderboard */}
-                <div className="bg-gray-900 border border-gray-800 rounded-2xl p-5">
-                    <p className="font-semibold text-white">Global Reyting</p>
-                    <p className="text-gray-500 text-xs mt-0.5 mb-5">
-                        {myRank ? `Sizning o'rningiz: #${myRank}` : 'Top o\'yinchilar'}
+                {/* Right — Leaderboard */}
+                <div className="bg-gray-900 border border-gray-800 rounded-2xl p-4 sm:p-5">
+                    <p className="font-semibold text-white text-sm sm:text-base">Global Reyting</p>
+                    <p className="text-gray-500 text-xs mt-0.5 mb-4">
+                        {myRank ? `Sizning o'rningiz: #${myRank}` : "Top o'yinchilar"}
                     </p>
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                         {leaderboard.map((u, idx) => {
                             const isYou = user && u.username === user.name;
                             return (
                                 <div
                                     key={u._id || idx}
-                                    className={`flex items-center gap-3 p-3 rounded-xl transition-colors ${
+                                    className={`flex items-center gap-2 sm:gap-3 p-2.5 rounded-xl transition-colors ${
                                         isYou ? 'bg-green-900/20 border border-green-900/40' : 'hover:bg-gray-800'
                                     }`}
                                 >
-                                    <div className="w-6 text-center shrink-0">
-                                        <span className="text-gray-500 text-sm font-medium">{idx + 1}</span>
+                                    <div className="w-5 text-center shrink-0">
+                                        <span className="text-gray-500 text-xs font-medium">{idx + 1}</span>
                                     </div>
-                                    <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0">
+                                    <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gray-700 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0">
                                         {(u.username || 'U').charAt(0).toUpperCase()}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-white truncate">{u.username}</p>
-                                        <p className="text-xs text-gray-500">Level {u.level || 1}</p>
+                                        <p className="text-xs sm:text-sm font-medium text-white truncate">{u.username}</p>
+                                        <p className="text-xs text-gray-500">Lv {u.level || 1}</p>
                                     </div>
                                     <div className="text-right shrink-0">
                                         <p className="text-xs font-semibold text-green-400">{(u.xp || 0).toLocaleString()} XP</p>

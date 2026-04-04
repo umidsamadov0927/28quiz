@@ -40,7 +40,7 @@ export default function Header({ onToggle }) {
     const { level, percent } = getLevelProgress(xp);
 
     return (
-        <header className="h-14 md:h-16 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-3 sm:px-6 shrink-0">
+        <header className="h-16 md:h-16 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-4 sm:px-6 shrink-0">
             {/* Left */}
             <div className="flex items-center gap-3 sm:gap-6">
                 <svg

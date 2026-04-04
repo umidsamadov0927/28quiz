@@ -8,7 +8,6 @@ import {
     ChevronRight, Target, Search, X, SlidersHorizontal,
 } from 'lucide-react';
 
-// ─── Category icon map ────────────────────────────────────────
 function getCategoryIcon(name) {
     const n = name.toLowerCase();
     if (n.includes('python'))                          return { icon: Terminal,  color: 'text-blue-400',   bg: 'bg-blue-500/10',   border: 'border-blue-500/30',   glow: 'group-hover:shadow-blue-500/20'   };
@@ -35,17 +34,15 @@ const SORT_OPTIONS = [
     { value: 'default',    label: 'Default'         },
     { value: 'name_asc',   label: 'A → Z'           },
     { value: 'name_desc',  label: 'Z → A'           },
-    { value: 'count_desc', label: 'Ko\'p savollar'  },
+    { value: 'count_desc', label: "Ko'p savollar"   },
     { value: 'count_asc',  label: 'Kam savollar'    },
 ];
 
-// ─── Quiz Card ────────────────────────────────────────────────
 function QuizCard({ c, query }) {
     const { icon: Icon, color, bg, border, glow } = getCategoryIcon(c.category);
     const diff = DIFF[c.difficulty] || DIFF.Easy;
     const count = c.count > 31 ? '31+' : c.count;
 
-    // Highlight matched text
     function Highlight({ text }) {
         if (!query) return <span>{text}</span>;
         const idx = text.toLowerCase().indexOf(query.toLowerCase());
@@ -62,34 +59,30 @@ function QuizCard({ c, query }) {
     return (
         <Link
             href={`/quiz/${encodeURIComponent(c.category)}`}
-            className={`group relative flex flex-col bg-gray-900 border border-gray-800 rounded-2xl p-5 overflow-hidden
+            className={`group relative flex flex-col bg-gray-900 border border-gray-800 rounded-2xl p-4 sm:p-5 overflow-hidden
                 hover:border-gray-600 hover:-translate-y-1 hover:shadow-2xl ${glow}
                 transition-all duration-300`}
         >
-            {/* Subtle top gradient line */}
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-            {/* Top row */}
-            <div className="flex items-start justify-between mb-5">
-                <div className={`w-13 h-13 w-12 h-12 rounded-xl ${bg} border ${border} flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110`}>
-                    <Icon className={`w-6 h-6 ${color}`} />
+            <div className="flex items-start justify-between mb-4">
+                <div className={`w-11 h-11 rounded-xl ${bg} border ${border} flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110`}>
+                    <Icon className={`w-5 h-5 ${color}`} />
                 </div>
-                <span className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-xl ${diff.cls}`}>
+                <span className={`flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-xl ${diff.cls}`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${diff.dot}`} />
                     {diff.label}
                 </span>
             </div>
 
-            {/* Category name */}
-            <h2 className={`font-bold text-lg mb-1 text-white group-hover:${color} transition-colors duration-200`}>
+            <h2 className={`font-bold text-base sm:text-lg mb-1 text-white group-hover:${color} transition-colors duration-200`}>
                 <Highlight text={c.category} />
             </h2>
 
-            {/* Savol count bar */}
-            <div className="mt-3 mb-4">
-                <div className="flex items-center justify-between mb-1.5">
+            <div className="mt-2 mb-3">
+                <div className="flex items-center justify-between mb-1">
                     <span className="text-xs text-gray-500 flex items-center gap-1">
-                        <Target size={11} /> {count} ta savol
+                        <Target size={10} /> {count} ta savol
                     </span>
                     <span className="text-xs text-gray-600">{Math.min(c.count, 31)} / 31</span>
                 </div>
@@ -105,21 +98,19 @@ function QuizCard({ c, query }) {
                 </div>
             </div>
 
-            {/* Footer */}
             <div className="mt-auto flex items-center justify-between pt-3 border-t border-gray-800">
-                <span className="text-xs text-gray-600 group-hover:text-gray-500 transition-colors">
+                <span className="text-xs text-gray-600 group-hover:text-gray-500 transition-colors hidden sm:block">
                     Boshlash uchun bosing
                 </span>
-                <div className="flex items-center gap-1 text-gray-600 group-hover:text-green-400 group-hover:translate-x-0.5 transition-all duration-200">
+                <div className="flex items-center gap-1 text-gray-600 group-hover:text-green-400 group-hover:translate-x-0.5 transition-all duration-200 ml-auto">
                     <span className="text-xs font-medium">Boshlash</span>
-                    <ChevronRight size={14} />
+                    <ChevronRight size={13} />
                 </div>
             </div>
         </Link>
     );
 }
 
-// ─── Page ─────────────────────────────────────────────────────
 export default function QuizListPage() {
     const [cats, setCats] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -158,7 +149,6 @@ export default function QuizListPage() {
         return list;
     }, [cats, diffFilter, search, sort]);
 
-    const totalQuestions = cats.reduce((s, c) => s + c.count, 0);
     const hardCount   = cats.filter(c => c.difficulty === 'Hard').length;
     const mediumCount = cats.filter(c => c.difficulty === 'Medium').length;
     const easyCount   = cats.filter(c => c.difficulty === 'Easy').length;
@@ -172,40 +162,73 @@ export default function QuizListPage() {
 
     return (
         <div className="min-h-screen bg-gray-950">
-            {/* ── Page header ───────────────────────────────── */}
-            <div className="px-6 pt-6 pb-2">
-                <h1 className="text-2xl font-bold text-white">Quiz Tanlash</h1>
-                <p className="text-gray-400 text-sm mt-1">
+            {/* Page header */}
+            <div className="px-3 sm:px-6 pt-4 sm:pt-6 pb-2">
+                <h1 className="text-xl sm:text-2xl font-bold text-white">Quiz Tanlash</h1>
+                <p className="text-gray-400 text-xs sm:text-sm mt-1">
                     Kategoriyani tanlang, testlarni yeching va XP to'plang
                 </p>
             </div>
 
-            {/* ── Filters & Search ──────────────────────────── */}
-            <div className="sticky top-0 z-20 bg-gray-950/90 backdrop-blur border-b border-gray-800/60 px-6 py-3">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            {/* Filters & Search */}
+            <div className="sticky top-0 z-20 bg-gray-950/95 backdrop-blur border-b border-gray-800/60 px-3 sm:px-6 py-2.5">
+                <div className="flex flex-col gap-2">
+                    {/* Row 1: search + sort */}
+                    <div className="flex items-center gap-2">
+                        <div className="relative flex-1">
+                            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                            <input
+                                type="text"
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                                placeholder="Kategoriya qidirish…"
+                                className="w-full bg-gray-900 border border-gray-800 text-white text-sm placeholder-gray-600 rounded-xl pl-8 pr-8 py-2 focus:outline-none focus:border-green-600 transition-colors"
+                            />
+                            {search && (
+                                <button
+                                    onClick={() => setSearch('')}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white"
+                                >
+                                    <X size={13} />
+                                </button>
+                            )}
+                        </div>
 
-                    {/* Search */}
-                    <div className="relative flex-1 w-full sm:max-w-xs">
-                        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-                        <input
-                            type="text"
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                            placeholder="Kategoriya qidirish…"
-                            className="w-full bg-gray-900 border border-gray-800 text-white text-sm placeholder-gray-600 rounded-xl pl-9 pr-8 py-2.5 focus:outline-none focus:border-green-600 transition-colors"
-                        />
-                        {search && (
+                        <div className="relative shrink-0">
                             <button
-                                onClick={() => setSearch('')}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+                                onClick={() => setShowSort(s => !s)}
+                                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
+                                    showSort
+                                        ? 'bg-gray-800 border-gray-600 text-white'
+                                        : 'bg-gray-900 border-gray-800 text-gray-400 hover:border-gray-600 hover:text-white'
+                                }`}
                             >
-                                <X size={14} />
+                                <SlidersHorizontal size={12} />
+                                <span className="hidden sm:inline">{SORT_OPTIONS.find(o => o.value === sort)?.label}</span>
                             </button>
-                        )}
+                            {showSort && (
+                                <div className="absolute right-0 top-full mt-1 bg-gray-900 border border-gray-800 rounded-xl shadow-2xl overflow-hidden z-50 min-w-[140px]">
+                                    {SORT_OPTIONS.map(o => (
+                                        <button
+                                            key={o.value}
+                                            onClick={() => { setSort(o.value); setShowSort(false); }}
+                                            className={`w-full text-left px-4 py-2.5 text-xs font-medium transition-colors ${
+                                                sort === o.value
+                                                    ? 'bg-green-900/40 text-green-400'
+                                                    : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                                            }`}
+                                        >
+                                            {sort === o.value && <span className="mr-1.5">✓</span>}
+                                            {o.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    {/* Difficulty pills */}
-                    <div className="flex items-center gap-1.5 flex-wrap">
+                    {/* Row 2: difficulty pills */}
+                    <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
                         {DIFF_FILTERS.map(({ value, label, count }) => {
                             const active = diffFilter === value;
                             const activeStyle =
@@ -218,56 +241,23 @@ export default function QuizListPage() {
                                 <button
                                     key={value}
                                     onClick={() => setDiffFilter(value)}
-                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                                    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold border transition-all shrink-0 ${
                                         active ? activeStyle : 'bg-gray-900 border-gray-800 text-gray-400 hover:border-gray-600 hover:text-white'
                                     }`}
                                 >
                                     {label}
-                                    <span className={`text-xs px-1.5 py-0.5 rounded-md font-bold ${active ? 'bg-white/10' : 'bg-gray-800'}`}>
+                                    <span className={`text-xs px-1 py-0.5 rounded-md font-bold ${active ? 'bg-white/10' : 'bg-gray-800'}`}>
                                         {count}
                                     </span>
                                 </button>
                             );
                         })}
                     </div>
-
-                    {/* Sort dropdown */}
-                    <div className="relative ml-auto">
-                        <button
-                            onClick={() => setShowSort(s => !s)}
-                            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
-                                showSort
-                                    ? 'bg-gray-800 border-gray-600 text-white'
-                                    : 'bg-gray-900 border-gray-800 text-gray-400 hover:border-gray-600 hover:text-white'
-                            }`}
-                        >
-                            <SlidersHorizontal size={13} />
-                            {SORT_OPTIONS.find(o => o.value === sort)?.label}
-                        </button>
-                        {showSort && (
-                            <div className="absolute right-0 top-full mt-1 bg-gray-900 border border-gray-800 rounded-xl shadow-2xl overflow-hidden z-50 min-w-[150px]">
-                                {SORT_OPTIONS.map(o => (
-                                    <button
-                                        key={o.value}
-                                        onClick={() => { setSort(o.value); setShowSort(false); }}
-                                        className={`w-full text-left px-4 py-2.5 text-xs font-medium transition-colors ${
-                                            sort === o.value
-                                                ? 'bg-green-900/40 text-green-400'
-                                                : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-                                        }`}
-                                    >
-                                        {o.value === sort && <span className="mr-1.5">✓</span>}
-                                        {o.label}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
                 </div>
             </div>
 
-            {/* ── Grid ─────────────────────────────────────── */}
-            <div className="px-6 py-6">
+            {/* Grid */}
+            <div className="px-3 sm:px-6 py-4 sm:py-6">
                 {loading ? (
                     <div className="flex flex-col items-center justify-center py-24 gap-3">
                         <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
@@ -275,14 +265,12 @@ export default function QuizListPage() {
                     </div>
                 ) : filtered.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-24 text-center">
-                        <div className="w-16 h-16 bg-gray-900 border border-gray-800 rounded-2xl flex items-center justify-center mb-4">
-                            <Search className="w-7 h-7 text-gray-600" />
+                        <div className="w-14 h-14 bg-gray-900 border border-gray-800 rounded-2xl flex items-center justify-center mb-4">
+                            <Search className="w-6 h-6 text-gray-600" />
                         </div>
-                        <p className="text-white font-semibold mb-1">Hech narsa topilmadi</p>
-                        <p className="text-gray-500 text-sm mb-4">
-                            {search
-                                ? `"${search}" bo'yicha natija yo'q`
-                                : 'Bu darajada quiz mavjud emas'}
+                        <p className="text-white font-semibold mb-1 text-sm">Hech narsa topilmadi</p>
+                        <p className="text-gray-500 text-xs mb-4">
+                            {search ? `"${search}" bo'yicha natija yo'q` : 'Bu darajada quiz mavjud emas'}
                         </p>
                         <button
                             onClick={() => { setSearch(''); setDiffFilter('All'); }}
@@ -293,14 +281,12 @@ export default function QuizListPage() {
                     </div>
                 ) : (
                     <>
-                        {/* Result count */}
-                        <p className="text-gray-500 text-xs mb-4">
+                        <p className="text-gray-500 text-xs mb-3">
                             {filtered.length === cats.length
                                 ? `${cats.length} ta kategoriya`
-                                : `${filtered.length} / ${cats.length} kategoriya ko'rsatilmoqda`}
+                                : `${filtered.length} / ${cats.length} kategoriya`}
                         </p>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                             {filtered.map(c => (
                                 <QuizCard key={c.category} c={c} query={search} />
                             ))}
