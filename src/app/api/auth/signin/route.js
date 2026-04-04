@@ -21,9 +21,12 @@ export async function POST(req) {
             return new Response(JSON.stringify({ message: 'Username yoki parol xato' }), { status: 401 });
         }
 
-        // Exclude password from response
+        // Exclude password from response and ensure daily fields exist so the
+        // client cookie always contains predictable values.
         const userResponse = user.toObject();
         delete userResponse.password;
+        if (userResponse.dailyXp == null) userResponse.dailyXp = 0;
+        if (userResponse.dailyXpDate == null) userResponse.dailyXpDate = null;
 
         return new Response(JSON.stringify({ message: 'Kirish muvaffaqiyatli', user: userResponse }), { status: 200 });
 

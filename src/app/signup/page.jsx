@@ -1,46 +1,78 @@
-'use client'; // Bu interaktiv component ekanligini bildiradi
+'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
+import { UserPlus, User, Lock, Mail, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
+import Link from 'next/link';
 
 export default function SignUpPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [grade, setGrade] = useState('');
+    const [email, setEmail] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const router = useRouter();
+
+    const handleUsernameChange = (e) => {
+        const value = e.target.value;
+        const filteredValue = value.replace(/[^a-zA-Z0-9_-]/g, '');
+        setUsername(filteredValue);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
 
-        if (!username || !password || !grade) {
-            setError('Barcha maydonlarni to\'ldiring!');
+        if (!username || !password) {
+            setError('Foydalanuvchi nomi va parol majburiy!');
             setLoading(false);
             return;
         }
 
+        if (email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                setError('Email manzili noto\'g\'ri formatda');
+                setLoading(false);
+                return;
+            }
+        }
+
         try {
-            const response = await fetch('/api/auth/signup', {
+            const signupResponse = await fetch('/api/auth/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password, grade: parseInt(grade) }),
+                body: JSON.stringify({ 
+                    username, 
+                    password, 
+                    email: email || undefined,
+                }),
             });
 
-            const data = await response.json();
+            const signupData = await signupResponse.json();
 
-            if (response.ok) {
-                // Muvaffaqiyatli ro'yxatdan o'tgandan so'ng, login sahifasiga o'tkazamiz
-                alert('Muvaffaqiyatli ro\'yxatdan o\'tdingiz! Endi tizimga kirishingiz mumkin.');
-                router.push('/login');
+            if (signupResponse.ok) {
+                const signinResponse = await fetch('/api/auth/signin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                const signinData = await signinResponse.json();
+
+                if (signinResponse.ok) {
+                    Cookies.set('session_token', JSON.stringify(signinData.user), { expires: 1 });
+                    router.push('/');
+                    router.refresh();
+                } else {
+                    setError(signinData.message || 'Avtomatik kirishda xatolik');
+                }
             } else {
-                // Serverdan kelgan xatolikni ko'rsatamiz
-                setError(data.message || 'Ro\'yxatdan o\'tishda xatolik yuz berdi');
+                setError(signupData.message || 'Ro\'yxatdan o\'tishda xatolik yuz berdi');
             }
         } catch (err) {
-            console.error('Signup error:', err);
             setError('Tarmoq xatosi: ' + err.message);
         } finally {
             setLoading(false);
@@ -48,48 +80,124 @@ export default function SignUpPage() {
     };
 
     return (
-        <div style={styles.container}>
-            <form onSubmit={handleSubmit} style={styles.form}>
-                <h2>Hisob Yaratish</h2>
-                <input
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    style={styles.input}
-                />
-                <input
-                    type="password"
-                    placeholder="Parol"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    style={styles.input}
-                />
-                <input
-                    type="number"
-                    placeholder="Sinfingiz (masalan, 9)"
-                    value={grade}
-                    onChange={(e) => setGrade(e.target.value)}
-                    style={styles.input}
-                />
-                <button type="submit" style={styles.button} disabled={loading}>
-                    {loading ? 'Yuklanmoqda...' : 'Ro\'yxatdan o\'tish'}
-                </button>
-                {error && <p style={styles.error}>{error}</p>}
-                <p style={styles.link} onClick={() => router.push('/login')}>
-                    Hisobingiz bormi? Tizimga kirish
-                </p>
-            </form>
+        <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
+            <div className="w-full max-w-md">
+                {/* Logo/Brand */}
+                <div className="text-center mb-8">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-600/10 border border-blue-500/20 mb-4">
+                        <UserPlus className="w-8 h-8 text-blue-500" />
+                    </div>
+                    <h1 className="text-3xl font-bold text-white tracking-tight">Ro'yxatdan o'tish</h1>
+                    <p className="text-gray-400 mt-2">Yangi hisob yarating va sarguzashtni boshlang</p>
+                </div>
+
+                <div className="bg-gray-900 border border-gray-800 rounded-3xl p-8 shadow-2xl">
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        {/* Username Input */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-400 mb-1.5 ml-1">
+                                Foydalanuvchi nomi
+                            </label>
+                            <div className="relative group">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500 group-focus-within:text-blue-500 transition-colors">
+                                    <User size={18} />
+                                </div>
+                                <input
+                                    type="text"
+                                    placeholder="username"
+                                    value={username}
+                                    onChange={handleUsernameChange}
+                                    required
+                                    className="w-full bg-gray-800 border border-gray-700 text-white pl-11 pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-gray-600"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Email Input */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-400 mb-1.5 ml-1">
+                                Email (ixtiyoriy)
+                            </label>
+                            <div className="relative group">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500 group-focus-within:text-blue-500 transition-colors">
+                                    <Mail size={18} />
+                                </div>
+                                <input
+                                    type="email"
+                                    placeholder="example@mail.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full bg-gray-800 border border-gray-700 text-white pl-11 pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-gray-600"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Password Input */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-400 mb-1.5 ml-1">
+                                Parol
+                            </label>
+                            <div className="relative group">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500 group-focus-within:text-blue-500 transition-colors">
+                                    <Lock size={18} />
+                                </div>
+                                <input
+                                    type="password"
+                                    placeholder="••••••••"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    className="w-full bg-gray-800 border border-gray-700 text-white pl-11 pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-gray-600"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Error Message */}
+                        {error && (
+                            <div className="flex items-center gap-2 text-red-400 bg-red-400/10 border border-red-400/20 p-3 rounded-xl text-sm">
+                                <AlertCircle size={16} />
+                                <span>{error}</span>
+                            </div>
+                        )}
+
+                        {/* Submit Button */}
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 group"
+                        >
+                            {loading ? (
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : (
+                                <>
+                                    Hisob yaratish
+                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                </>
+                            )}
+                        </button>
+                    </form>
+
+                    {/* Footer Links */}
+                    <div className="mt-8 pt-6 border-t border-gray-800 text-center">
+                        <p className="text-gray-400">
+                            Hisobingiz bormi?{' '}
+                            <Link
+                                href="/login"
+                                className="text-blue-500 hover:text-blue-400 font-medium transition-colors"
+                            >
+                                Kirish
+                            </Link>
+                        </p>
+                    </div>
+                </div>
+
+                {/* Back to Home link */}
+                <div className="mt-6 text-center">
+                    <Link href="/" className="text-gray-500 hover:text-gray-300 text-sm transition-colors">
+                        ← Asosiy sahifaga qaytish
+                    </Link>
+                </div>
+            </div>
         </div>
     );
 }
-
-// Stil uchun oddiy obyekt (CSS modullari yoki Tailwind ishlatishingiz mumkin)
-const styles = {
-    container: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f0f2f5' },
-    form: { display: 'flex', flexDirection: 'column', padding: '40px', background: 'white', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' },
-    input: { margin: '10px 0', padding: '12px', fontSize: '16px', borderRadius: '4px', border: '1px solid #ddd' },
-    button: { padding: '12px', fontSize: '16px', background: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' },
-    error: { color: 'red', marginTop: '10px' },
-    link: { marginTop: '15px', color: '#007bff', cursor: 'pointer', textAlign: 'center' }
-};

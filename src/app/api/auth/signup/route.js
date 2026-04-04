@@ -6,16 +6,24 @@ export async function POST(req) {
     try {
         await connectDB();
 
-        const { username, password, grade } = await req.json();
+        const { username, password, email } = await req.json();
 
-        if (!username || !password || !grade) {
-            return new Response(JSON.stringify({ message: 'Username parol va sinf majburiy' }), { status: 400 });
+        if (!username || !password) {
+            return new Response(JSON.stringify({ message: 'Username va parol majburiy' }), { status: 400 });
         }
 
-        // Check if user exists
-        const existingUser = await User.findOne({ username });
-        if (existingUser) {
+        // Check if user exists by username
+        const existingUserByUsername = await User.findOne({ username });
+        if (existingUserByUsername) {
             return new Response(JSON.stringify({ message: 'Bunday username mavjud' }), { status: 409 });
+        }
+
+        // Check if email exists (if provided)
+        if (email) {
+            const existingUserByEmail = await User.findOne({ email });
+            if (existingUserByEmail) {
+                return new Response(JSON.stringify({ message: 'Bunday email bilan akkaunt mavjud' }), { status: 409 });
+            }
         }
 
         // Hash password
@@ -24,8 +32,8 @@ export async function POST(req) {
         // Create new user
         const newUser = await User.create({
             username,
-            password: hashedPassword,
-            grade: parseInt(grade, 10)
+            email: email || null,
+            password: hashedPassword
         });
 
         return new Response(JSON.stringify({ message: 'Foydalanuvchi muvaffaqiyatli ro\'yxatdan o\'tdi' }), { status: 201 });

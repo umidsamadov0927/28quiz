@@ -1,6 +1,5 @@
 'use client';
 import {useEffect, useState} from 'react';
-import {allowedDisplayValues} from "next/dist/compiled/@next/font/dist/constants";
 
 export default function About() {
 
