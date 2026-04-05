@@ -86,6 +86,14 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    avatarColor: {
+        type: String,
+        default: 'green'
+    },
+    avatarUrl: {
+        type: String,
+        default: null
+    },
     joinedAt: {
         type: Date,
         default: Date.now
@@ -98,3 +106,7 @@ if (mongoose.models.User) {
 }
 
 export const User = mongoose.model('User', userSchema);
+
+// Drop the old non-sparse email index so Mongoose recreates it as sparse.
+// Runs once per cold start; errors are silently ignored.
+User.collection.dropIndex('email_1').then(() => User.syncIndexes()).catch(() => {});

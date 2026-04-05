@@ -1,11 +1,27 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
     Zap, Target, Flame, Trophy, Calendar,
     Mail, TrendingUp, Star, Award, CheckCircle,
-    XCircle, ChevronUp,
+    XCircle, ChevronUp, Settings,
 } from 'lucide-react';
+
+const AVATAR_COLORS = [
+    { key: 'green',  bg: 'bg-green-900',  border: 'border-green-700',  text: 'text-green-400'  },
+    { key: 'blue',   bg: 'bg-blue-900',   border: 'border-blue-700',   text: 'text-blue-400'   },
+    { key: 'purple', bg: 'bg-purple-900', border: 'border-purple-700', text: 'text-purple-400' },
+    { key: 'orange', bg: 'bg-orange-900', border: 'border-orange-700', text: 'text-orange-400' },
+    { key: 'red',    bg: 'bg-red-900',    border: 'border-red-700',    text: 'text-red-400'    },
+    { key: 'pink',   bg: 'bg-pink-900',   border: 'border-pink-700',   text: 'text-pink-400'   },
+    { key: 'yellow', bg: 'bg-yellow-900', border: 'border-yellow-700', text: 'text-yellow-400' },
+    { key: 'cyan',   bg: 'bg-cyan-900',   border: 'border-cyan-700',   text: 'text-cyan-400'   },
+];
+
+function getColorClasses(colorKey) {
+    return AVATAR_COLORS.find(c => c.key === colorKey) || AVATAR_COLORS[0];
+}
 
 function getLevelInfo(xp) {
     let level = 1;
@@ -118,6 +134,8 @@ export default function UserProfile() {
     });
     const maxDayXp = Math.max(...last7.map(d => d.xp), 1);
 
+    const colorCls = getColorClasses(user.avatarColor || 'green');
+
     const joinedDate = user.joinedAt
         ? new Date(user.joinedAt).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
         : '—';
@@ -142,8 +160,11 @@ export default function UserProfile() {
                     {/* Avatar + XP (row on mobile) */}
                     <div className="flex items-center gap-4 w-full sm:w-auto">
                         <div className="relative shrink-0">
-                            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-green-900 border-2 border-green-700 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-extrabold text-green-400">
-                                {(user.username || 'U').charAt(0).toUpperCase()}
+                            <div className={`w-16 h-16 sm:w-20 sm:h-20 ${colorCls.bg} border-2 ${colorCls.border} rounded-2xl overflow-hidden flex items-center justify-center text-2xl sm:text-3xl font-extrabold ${colorCls.text}`}>
+                                {user.avatarUrl
+                                    ? <img src={user.avatarUrl} alt={user.username} className="w-full h-full object-cover" />
+                                    : (user.username || 'U').charAt(0).toUpperCase()
+                                }
                             </div>
                             <div className="absolute -bottom-2 -right-2 bg-green-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full border-2 border-gray-900">
                                 Lv {level}
@@ -165,6 +186,12 @@ export default function UserProfile() {
                             <span className="text-xs bg-green-900/40 border border-green-800 text-green-400 px-2 py-0.5 rounded-xl font-semibold">
                                 Level {level}
                             </span>
+                            <Link
+                                href="/settings"
+                                className="ml-auto sm:ml-0 flex items-center gap-1.5 text-xs text-gray-400 hover:text-white bg-gray-800 hover:bg-gray-700 border border-gray-700 px-2.5 py-1 rounded-lg transition-colors no-underline"
+                            >
+                                <Settings size={12} /> Sozlamalar
+                            </Link>
                         </div>
 
                         <div className="flex flex-wrap items-center gap-3 mt-1.5">

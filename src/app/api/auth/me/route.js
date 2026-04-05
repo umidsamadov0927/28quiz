@@ -35,9 +35,21 @@ export async function GET(req) {
             return new Response(JSON.stringify({ message: 'User not found' }), { status: 404 });
         }
 
+        // Reset dailyXp if it belongs to a previous day
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (user.dailyXpDate) {
+            const xpDay = new Date(user.dailyXpDate);
+            xpDay.setHours(0, 0, 0, 0);
+            if (xpDay.getTime() !== today.getTime()) {
+                user.dailyXp = 0;
+                user.dailyXpDate = null;
+                await user.save();
+            }
+        }
+
         const userObj = user.toObject();
         if (userObj.dailyXp == null) userObj.dailyXp = 0;
-        if (userObj.dailyXpDate == null) userObj.dailyXpDate = null;
         if (userObj.activity == null) userObj.activity = [];
 
         return new Response(JSON.stringify({ user: userObj }), { status: 200 });

@@ -38,7 +38,20 @@ export async function GET(req, { params }) {
 
         console.log('[quizs/category] request for category:', { raw: resolvedParams?.category, decoded: category, normalized, url: req.url });
 
-        // find up to 31 questions for this category (case-insensitive)
+        const url = new URL(req.url);
+        const allMode = url.searchParams.get('all') === '1';
+
+        if (allMode) {
+            // Library view: return all questions sorted by difficulty
+            const diffOrder = { Easy: 0, Medium: 1, Hard: 2 };
+            const qs = await Question.find({ category: categoryRegex })
+                .sort({ createdAt: -1 })
+                .lean();
+            qs.sort((a, b) => (diffOrder[a.difficulty] ?? 0) - (diffOrder[b.difficulty] ?? 0));
+            return new Response(JSON.stringify({ questions: qs }), { status: 200 });
+        }
+
+        // Quiz mode: up to 31 shuffled questions
         const qs = await Question.find({ category: categoryRegex }).limit(31).lean();
 
         // shuffle for randomness

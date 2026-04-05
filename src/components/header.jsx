@@ -66,6 +66,7 @@ export default function Header({ onToggle }) {
                     <input
                         type="text"
                         placeholder="Qidirish..."
+                        autoComplete="off"
                         className="bg-transparent border-none outline-none text-gray-400 text-sm w-full placeholder-gray-600"
                     />
                 </div>
@@ -96,8 +97,11 @@ export default function Header({ onToggle }) {
                             </div>
                         </div>
                     </div>
-                    <Link href="/user" className="w-8 h-8 sm:w-9 sm:h-9 bg-gray-700 rounded-full flex items-center justify-center text-white text-sm font-semibold cursor-pointer shrink-0">
-                        {username.charAt(0).toUpperCase()}
+                    <Link href="/user" className="w-8 h-8 sm:w-9 sm:h-9 bg-gray-700 rounded-full overflow-hidden flex items-center justify-center text-white text-sm font-semibold cursor-pointer shrink-0">
+                        {user?.avatarUrl
+                            ? <img src={user.avatarUrl} alt={username} className="w-full h-full object-cover" />
+                            : username.charAt(0).toUpperCase()
+                        }
                     </Link>
                 </div>
             </div>

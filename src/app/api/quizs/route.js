@@ -1,9 +1,6 @@
 import { connectDB } from '../config/mongodb.js';
 import { Question } from '../models/Question.js';
 
-// return a list of quiz "cards" derived from existing questions.  Each card
-// holds metadata about a category (e.g. programming language) and is used by
-// the frontend to render the selection page.
 export async function GET() {
     try {
         await connectDB();
@@ -14,20 +11,27 @@ export async function GET() {
                     _id: '$category',
                     count: { $sum: 1 },
                     firstCreated: { $min: '$createdAt' },
-                    difficulties: { $addToSet: '$difficulty' }
+                    difficulties: { $push: '$difficulty' },
+                    totalXp: { $sum: '$xpReward' },
                 }
             }
         ]);
 
         const categories = stats.map((c) => {
+            const diffCounts = { Easy: 0, Medium: 0, Hard: 0 };
+            (c.difficulties || []).forEach(d => { if (d in diffCounts) diffCounts[d]++; });
+
             let difficulty = 'Easy';
-            if (c.difficulties.includes('Hard')) difficulty = 'Hard';
-            else if (c.difficulties.includes('Medium')) difficulty = 'Medium';
+            if (diffCounts.Hard > 0) difficulty = 'Hard';
+            else if (diffCounts.Medium > 0) difficulty = 'Medium';
+
             return {
                 category: c._id,
                 count: c.count,
                 firstCreated: c.firstCreated,
-                difficulty
+                difficulty,
+                diffCounts,
+                totalXp: c.totalXp || 0,
             };
         });
 

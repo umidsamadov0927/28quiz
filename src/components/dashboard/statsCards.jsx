@@ -9,10 +9,10 @@ const statItems = [
 
 export default function StatsCards({ stats }) {
     const values = {
-        xp: stats?.totalXp?.toLocaleString(),
-        questions: stats?.questionsAnswered?.toString(),
-        streak: stats?.currentStreak?.toString(),
-        rank: `#${stats.rank}`,
+        xp: stats?.totalXp?.toLocaleString() ?? '—',
+        questions: stats?.questionsAnswered?.toString() ?? '—',
+        streak: stats?.currentStreak?.toString() ?? '—',
+        rank: stats?.rank != null ? `#${stats.rank}` : '—',
     };
 
     return (

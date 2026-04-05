@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { Zap, Trophy, ChevronLeft, ChevronRight, TrendingUp, Users, Target, Star } from 'lucide-react';
+import { Zap, Trophy, ChevronLeft, ChevronRight, TrendingUp, Users, Target, Star, Lock } from 'lucide-react';
+import Link from 'next/link';
 
 const PER_PAGE = 10;
 
@@ -261,7 +262,8 @@ function Pagination({ page, totalPages, onChange }) {
 export default function LeaderboardPage() {
     const [board, setBoard]     = useState([]);
     const [top3, setTop3]       = useState([]);
-    const [me, setMe]           = useState(null);
+    const [me, setMe]             = useState(null);
+    const [meLoading, setMeLoading] = useState(true);
     const [myRank, setMyRank]   = useState(null);
     const [total, setTotal]     = useState(0);
     const [page, setPage]       = useState(1);
@@ -271,7 +273,11 @@ export default function LeaderboardPage() {
     const startRank  = (page - 1) * PER_PAGE + 1;
 
     useEffect(() => {
-        fetch('/api/auth/me').then(r => r.ok ? r.json() : null).then(d => d && setMe(d.user || null)).catch(() => {});
+        fetch('/api/auth/me')
+            .then(r => r.ok ? r.json() : null)
+            .then(d => d && setMe(d.user || null))
+            .catch(() => {})
+            .finally(() => setMeLoading(false));
     }, []);
 
     useEffect(() => {
@@ -300,6 +306,79 @@ export default function LeaderboardPage() {
         setPage(p);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
+
+    // ── Level gate ──
+    if (meLoading) return (
+        <div className="flex items-center justify-center min-h-screen bg-gray-950">
+            <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+    );
+
+    const myLevel = computeLevel(me?.xp || 0);
+    const REQUIRED_LEVEL = 5;
+
+    if (!me || myLevel < REQUIRED_LEVEL) {
+        // XP needed to reach level 5: sum(i*500, i=1..4) = 5000
+        const xpForLevel5 = Array.from({ length: REQUIRED_LEVEL - 1 }, (_, i) => (i + 1) * 500).reduce((a, b) => a + b, 0);
+        const currentXp   = me?.xp || 0;
+        const progress    = Math.min(100, (currentXp / xpForLevel5) * 100);
+        const xpNeeded    = Math.max(0, xpForLevel5 - currentXp);
+
+        return (
+            <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
+                <div className="max-w-sm w-full text-center space-y-5">
+                    <div className="w-16 h-16 bg-gray-900 border border-gray-800 rounded-2xl flex items-center justify-center mx-auto">
+                        <Lock size={24} className="text-gray-500" />
+                    </div>
+                    <div>
+                        <h2 className="text-lg font-bold text-white">Reyting jadvali yopiq</h2>
+                        <p className="text-gray-500 text-sm mt-1">Ko&apos;rish uchun <span className="text-green-400 font-semibold">Level {REQUIRED_LEVEL}</span> ga yetish kerak</p>
+                    </div>
+
+                    {me ? (
+                        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-5 text-left space-y-3">
+                            <div className="flex items-center justify-between text-sm">
+                                <span className="text-gray-400">Joriy level</span>
+                                <span className="text-white font-bold">Lv {myLevel}</span>
+                            </div>
+                            <div>
+                                <div className="flex justify-between text-xs text-gray-500 mb-1.5">
+                                    <span className="text-white font-medium">{currentXp.toLocaleString()} XP</span>
+                                    <span>{xpForLevel5.toLocaleString()} XP</span>
+                                </div>
+                                <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-gradient-to-r from-green-600 to-green-400 rounded-full transition-all"
+                                        style={{ width: `${progress}%` }}
+                                    />
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1.5">
+                                    Level {REQUIRED_LEVEL} uchun yana{' '}
+                                    <span className="text-green-400 font-semibold">{xpNeeded.toLocaleString()} XP</span> kerak
+                                </p>
+                            </div>
+                            <div className="flex items-center gap-2 pt-1 border-t border-gray-800">
+                                <Zap size={12} className="text-green-400" />
+                                <span className="text-xs text-gray-400">Quiz ishlash orqali XP to&apos;plang</span>
+                            </div>
+                            <Link href="/quiz"
+                                className="flex items-center justify-center gap-2 w-full py-2.5 bg-green-600 hover:bg-green-500 text-white text-sm font-semibold rounded-xl transition-colors">
+                                Quizga o&apos;tish
+                            </Link>
+                        </div>
+                    ) : (
+                        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-5 space-y-3">
+                            <p className="text-sm text-gray-400">Ko&apos;rish uchun tizimga kiring</p>
+                            <Link href="/login"
+                                className="flex items-center justify-center w-full py-2.5 bg-green-600 hover:bg-green-500 text-white text-sm font-semibold rounded-xl transition-colors">
+                                Kirish
+                            </Link>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-950 p-3 sm:p-6">

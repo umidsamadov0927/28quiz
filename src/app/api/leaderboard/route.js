@@ -8,6 +8,9 @@ function parseSession(cookieHeader) {
     try { return JSON.parse(decodeURIComponent(part.split('=')[1] || '')); } catch { return null; }
 }
 
+// Usernames hidden from public leaderboard (admin accounts)
+const HIDDEN_USERS = ['ad'];
+
 export async function GET(req) {
     try {
         await connectDB();
@@ -19,22 +22,30 @@ export async function GET(req) {
 
         const session = parseSession(req.headers.get('cookie'));
 
+        // Base filter: exclude admin accounts
+        const baseFilter = { username: { $nin: HIDDEN_USERS } };
+
         const [users, total] = await Promise.all([
-            User.find()
+            User.find(baseFilter)
                 .select('-password -activity -dailyXpDate')
-                .sort({ xp: -1 })
+                .sort({ xp: -1, joinedAt: 1 })
                 .skip(skip)
                 .limit(limit)
                 .lean(),
-            User.countDocuments(),
+            User.countDocuments(baseFilter),
         ]);
 
-        // Compute current user's rank
+        // Compute current user's rank (exclude hidden users from count too)
         let myRank = null;
-        if (session?.username) {
-            const me = await User.findOne({ username: session.username }).select('xp').lean();
+        if (session?.username && !HIDDEN_USERS.includes(session.username)) {
+            const me = await User.findOne({ username: session.username }).select('xp joinedAt').lean();
             if (me) {
-                myRank = await User.countDocuments({ xp: { $gt: me.xp || 0 } }) + 1;
+                const xp = me.xp ?? 0;
+                const [above, tiedBefore] = await Promise.all([
+                    User.countDocuments({ ...baseFilter, xp: { $gt: xp } }),
+                    User.countDocuments({ ...baseFilter, xp, joinedAt: { $lt: me.joinedAt } }),
+                ]);
+                myRank = above + tiedBefore + 1;
             }
         }
 

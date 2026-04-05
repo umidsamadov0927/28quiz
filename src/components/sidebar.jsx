@@ -9,6 +9,7 @@ import {
     LogOut,
     Zap,
     Flame, HomeIcon, TrophyIcon, PlusIcon, BookOpenIcon, UserIcon,
+    Shield as ShieldIcon,
 } from 'lucide-react';
 
 const menuItems = [
@@ -16,6 +17,7 @@ const menuItems = [
     { key: 'quiz', label: 'Solve Quiz', icon: BookOpenIcon, route: '/quiz' },
     { key: 'leaderboard', label: 'Leaderboard', icon: TrophyIcon, route: '/leaderboard' },
     { key: 'create', label: "Create Question", icon: PlusIcon, route: '/create' },
+    { key: 'admin', label: 'Admin Panel', icon: ShieldIcon, route: '/admin' },
     { key: 'profile', label: "Profile", icon: UserIcon, route: '/user' },
 ];
 
@@ -65,7 +67,7 @@ export default function Sidebar({ isExpanded }) {
     };
 
     const visibleMenu = menuItems.filter((item) => {
-        if (item.key === 'create') {
+        if (item.key === 'create' || item.key === 'admin') {
             return currentUser?.username === 'ad';
         }
         return true;

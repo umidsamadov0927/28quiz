@@ -29,12 +29,10 @@ export async function POST(req) {
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create new user
-        const newUser = await User.create({
-            username,
-            email: email || null,
-            password: hashedPassword
-        });
+        // Create new user — omit email entirely if not provided
+        const userData = { username, password: hashedPassword };
+        if (email) userData.email = email;
+        const newUser = await User.create(userData);
 
         return new Response(JSON.stringify({ message: 'Foydalanuvchi muvaffaqiyatli ro\'yxatdan o\'tdi' }), { status: 201 });
 

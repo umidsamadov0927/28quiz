@@ -50,7 +50,7 @@ export default function Dashboard() {
                 if (lbRes.ok) {
                     const data = await lbRes.json();
                     setLeaderboard(data.leaderboard || []);
-                    if (data.myRank) setMyRank(data.myRank);
+                    if (data.myRank != null) setMyRank(data.myRank);
                 }
                 if (qRes.ok) {
                     const d = await qRes.json();
@@ -111,7 +111,7 @@ export default function Dashboard() {
             <div className="flex items-start justify-between gap-3">
                 <div>
                     <h1 className="text-xl sm:text-2xl font-bold text-white">
-                        Xush kelibsiz, {user ? user.name : 'do\'st'}!
+                        Xush kelibsiz, {user ? user.name : 'do\'stim'}!
                     </h1>
                     <p className="text-gray-400 text-xs sm:text-sm mt-1">Bugun ham bilimingizni oshiring</p>
                 </div>
