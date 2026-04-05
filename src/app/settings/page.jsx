@@ -82,7 +82,7 @@ function Toast({ msg, type }) {
 }
 
 /* ── Level lock banner ── */
-function LevelLockBanner({ userLevel, required = 10 }) {
+function LevelLockBanner({ userLevel, required = 5 }) {
     const xpNeeded = Array.from({ length: required - 1 }, (_, i) => (i + 1) * 500).reduce((a, b) => a + b, 0);
     return (
         <div className="flex items-start gap-3 px-4 py-3 mb-4 bg-yellow-950/30 border border-yellow-800/50 rounded-xl">
@@ -337,7 +337,7 @@ export default function SettingsPage() {
                                 </div>
                                 <p className="text-xs text-gray-500 mt-0.5">
                                     Lv {userLevel}
-                                    {locked && <span className="text-yellow-500 ml-1">· 10 kerak</span>}
+                                    {locked && <span className="text-yellow-500 ml-1">· 5 kerak</span>}
                                 </p>
                             </div>
                         </div>
@@ -424,7 +424,7 @@ export default function SettingsPage() {
                                     <button onClick={saveProfile} disabled={locked || profileLoading}
                                         className="flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl transition-colors">
                                         {profileLoading ? <Loader2 size={14} className="animate-spin" /> : locked ? <Lock size={14} /> : <Save size={14} />}
-                                        {locked ? 'Level 10 kerak' : 'Saqlash'}
+                                        {locked ? 'Level 5 kerak' : 'Saqlash'}
                                     </button>
                                 </div>
                             </div>
@@ -557,7 +557,7 @@ export default function SettingsPage() {
                                         <button onClick={saveAppearance} disabled={locked || appearanceLoading}
                                             className="flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl transition-colors">
                                             {appearanceLoading ? <Loader2 size={14} className="animate-spin" /> : locked ? <Lock size={14} /> : <Save size={14} />}
-                                            {locked ? 'Level 10 kerak' : 'Saqlash'}
+                                            {locked ? 'Level 5 kerak' : 'Saqlash'}
                                         </button>
                                     </div>
                                 </div>
@@ -595,7 +595,7 @@ export default function SettingsPage() {
                                         <button onClick={changePassword} disabled={locked || secLoading}
                                             className="flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl transition-colors">
                                             {secLoading ? <Loader2 size={14} className="animate-spin" /> : <Lock size={14} />}
-                                            {locked ? 'Level 10 kerak' : 'Parolni yangilash'}
+                                            {locked ? 'Level 5 kerak' : 'Parolni yangilash'}
                                         </button>
                                     </div>
                                 </div>
