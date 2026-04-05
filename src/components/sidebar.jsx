@@ -68,7 +68,7 @@ export default function Sidebar({ isExpanded }) {
 
     const visibleMenu = menuItems.filter((item) => {
         if (item.key === 'create' || item.key === 'admin') {
-            return currentUser?.username === 'ad';
+            return currentUser?.username === 'username';
         }
         return true;
     });
