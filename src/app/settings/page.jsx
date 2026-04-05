@@ -291,7 +291,7 @@ export default function SettingsPage() {
     const colorCls   = getColor(avatarColor);
     const hasAvatar  = !!(previewUrl || user?.avatarUrl);
     const userLevel  = computeLevel(user?.xp || 0);
-    const locked     = userLevel < 10;
+    const locked     = userLevel < 5;
 
     return (
         <div className="min-h-screen bg-gray-950 p-4 sm:p-6">

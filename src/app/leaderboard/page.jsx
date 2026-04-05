@@ -315,7 +315,7 @@ export default function LeaderboardPage() {
     );
 
     const myLevel = computeLevel(me?.xp || 0);
-    const REQUIRED_LEVEL = 5;
+    const REQUIRED_LEVEL = 2;
 
     if (!me || myLevel < REQUIRED_LEVEL) {
         // XP needed to reach level 5: sum(i*500, i=1..4) = 5000

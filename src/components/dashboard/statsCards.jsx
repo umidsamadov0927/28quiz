@@ -7,7 +7,7 @@ const statItems = [
     { id: 'rank', label: 'Global Rank', icon: Trophy, color: 'text-yellow-400', bg: 'bg-yellow-400/10' },
 ];
 
-export default function StatsCards({ stats }) {
+export default function StatsCards({ stats, hideRank = false }) {
     const values = {
         xp: stats?.totalXp?.toLocaleString() ?? '—',
         questions: stats?.questionsAnswered?.toString() ?? '—',
@@ -15,9 +15,14 @@ export default function StatsCards({ stats }) {
         rank: stats?.rank != null ? `#${stats.rank}` : '—',
     };
 
+    const visibleItems = hideRank ? statItems.filter(i => i.id !== 'rank') : statItems;
+    const colClass = visibleItems.length === 3
+        ? 'grid-cols-1 sm:grid-cols-3'
+        : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4';
+
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {statItems.map((item) => {
+        <div className={`grid ${colClass} gap-4`}>
+            {visibleItems.map((item) => {
                 const Icon = item.icon;
                 return (
                     <div

@@ -1,7 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Zap, TrendingUp, Clock, Code, Flame } from 'lucide-react';
+import { Zap, TrendingUp, Clock, Code, Flame, Lock } from 'lucide-react';
+
+function computeLevel(xp) {
+    let level = 1, acc = 0;
+    while (acc + level * 500 <= xp) { acc += level * 500; level++; }
+    return level;
+}
 import StatsCards from '@/components/dashboard/statsCards';
 import ActivityChart from '@/components/dashboard/activityChart';
 
@@ -65,7 +71,9 @@ export default function Dashboard() {
         load();
     }, []);
 
-    const question = questions[qIndex];
+    const question  = questions[qIndex];
+    const userLevel = computeLevel(user?.totalXp || 0);
+    const showRank  = userLevel >= 2;
 
     const handleSubmit = async () => {
         if (selected === null || !question) return;
@@ -127,15 +135,16 @@ export default function Dashboard() {
                     totalXp: user?.totalXp,
                     questionsAnswered: user?.questionsAnswered,
                     currentStreak: user?.currentStreak,
-                    rank: myRank,
+                    rank: showRank ? myRank : null,
                 }}
+                hideRank={!showRank}
             />
 
             {/* Main Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className={`grid grid-cols-1 gap-4 sm:gap-6 ${showRank ? 'lg:grid-cols-3' : ''}`}>
 
                 {/* Left — activity + quiz */}
-                <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+                <div className={showRank ? 'lg:col-span-2 space-y-4 sm:space-y-6' : 'space-y-4 sm:space-y-6'}>
                     <ActivityChart
                         data={activity.length ? activity.map(a => ({
                             day: new Date(a.date).toLocaleDateString('en-US', { weekday: 'short' }),
@@ -232,8 +241,8 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                {/* Right — Leaderboard */}
-                <div className="bg-gray-900 border border-gray-800 rounded-2xl p-4 sm:p-5">
+                {/* Right — Leaderboard (level 2+) */}
+                {showRank && <div className="bg-gray-900 border border-gray-800 rounded-2xl p-4 sm:p-5">
                     <p className="font-semibold text-white text-sm sm:text-base">Global Reyting</p>
                     <p className="text-gray-500 text-xs mt-0.5 mb-4">
                         {myRank ? `Sizning o'rningiz: #${myRank}` : "Top o'yinchilar"}
@@ -265,7 +274,7 @@ export default function Dashboard() {
                             );
                         })}
                     </div>
-                </div>
+                </div>}
             </div>
         </div>
     );

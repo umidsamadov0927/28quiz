@@ -38,36 +38,13 @@ const DIFF_CONFIG = {
 
 function QuestionCard({ q, index }) {
     const diff = DIFF_CONFIG[q.difficulty] || DIFF_CONFIG.Easy;
-    const [expanded, setExpanded] = useState(false);
     const preview = q.question.length > 90 ? q.question.slice(0, 90) + '…' : q.question;
 
     return (
-        <div
-            className="bg-gray-800/60 border border-gray-700/60 rounded-xl p-3.5 cursor-pointer hover:border-gray-600 transition-all duration-200"
-            onClick={() => setExpanded(e => !e)}
-        >
+        <div className="bg-gray-800/60 border border-gray-700/60 rounded-xl p-3.5">
             <div className="flex items-start gap-2.5">
                 <span className="text-xs font-bold text-gray-600 mt-0.5 shrink-0 w-5">{index + 1}.</span>
-                <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-200 leading-relaxed">
-                        {expanded ? q.question : preview}
-                    </p>
-                    {expanded && q.options?.length > 0 && (
-                        <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-1">
-                            {q.options.map((opt, i) => (
-                                <div key={i} className={`text-xs px-2 py-1 rounded-lg flex items-center gap-1.5 ${
-                                    i === q.correctAnswer
-                                        ? 'bg-green-900/30 text-green-400 border border-green-800/50'
-                                        : 'bg-gray-700/50 text-gray-400'
-                                }`}>
-                                    <span className="shrink-0 font-bold">{String.fromCharCode(65 + i)}.</span>
-                                    {opt}
-                                    {i === q.correctAnswer && <Check size={10} className="ml-auto shrink-0" />}
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
+                <p className="text-sm text-gray-200 leading-relaxed flex-1 min-w-0">{preview}</p>
             </div>
             <div className="flex items-center gap-2 mt-2.5 ml-7">
                 <span className={`text-xs px-2 py-0.5 rounded-lg font-semibold flex items-center gap-1 ${diff.cls}`}>
@@ -83,7 +60,6 @@ function QuestionCard({ q, index }) {
                         <Clock size={10} /> {q.time}s
                     </span>
                 )}
-                <span className="ml-auto text-xs text-gray-600">{expanded ? "Yig'ish \u25b2" : "Ko'proq \u25bc"}</span>
             </div>
         </div>
     );
