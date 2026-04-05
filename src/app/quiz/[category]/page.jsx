@@ -351,7 +351,7 @@ export default function QuizCategoryPage() {
     const isLastQ    = index === total - 1;
     const progress   = total ? ((index + 1) / total) * 100 : 0;
 
-    const handleNext = async () => {
+    const handleNext = () => {
         if (!current) return;
         if (selected === null) {
             countsRef.current.unanswered += 1;
@@ -359,26 +359,26 @@ export default function QuizCategoryPage() {
             else { setMode('results'); }
             return;
         }
-        setAnswered(true);
         const correct = selected === current.correctAnswer;
         const xpReward = correct ? (current.xpReward || 0) : 0;
         if (correct) countsRef.current.correct += 1;
         else countsRef.current.incorrect += 1;
 
-        try {
-            await fetch('/api/user/activity', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ xpReward, correct }),
-            });
-        } catch (e) { console.error(e); }
+        // fire-and-forget — don't block UI on network round-trip
+        fetch('/api/user/activity', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ xpReward, correct }),
+        }).catch(() => {});
 
+        setAnswered(true);
+        // short flash so user sees correct/wrong, then move immediately
         setTimeout(() => {
             setSelected(null);
             setAnswered(false);
             if (index + 1 < total) { setIndex(index + 1); }
             else { setMode('results'); }
-        }, 500);
+        }, 450);
     };
 
     const handleRetry = async () => {

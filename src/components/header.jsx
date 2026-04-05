@@ -32,6 +32,14 @@ export default function Header({ onToggle }) {
             }
         }
         fetchUser();
+        // re-fetch when tab regains focus (e.g. after changing avatar in settings)
+        window.addEventListener('focus', fetchUser);
+        // re-fetch when settings page dispatches 'user-updated'
+        window.addEventListener('user-updated', fetchUser);
+        return () => {
+            window.removeEventListener('focus', fetchUser);
+            window.removeEventListener('user-updated', fetchUser);
+        };
     }, []);
 
     const username = user?.username || '—';

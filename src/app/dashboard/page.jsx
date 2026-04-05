@@ -48,6 +48,7 @@ export default function Dashboard() {
                             correctAnswers: user.correctAnswers || 0,
                             currentStreak: user.dayStreak || 0,
                             level: user.level || 1,
+                            avatarUrl: user.avatarUrl || '',
                         });
                         setTodayXp(user.dailyXp || 0);
                         setActivity(user.activity || []);
@@ -260,8 +261,11 @@ export default function Dashboard() {
                                     <div className="w-5 text-center shrink-0">
                                         <span className="text-gray-500 text-xs font-medium">{idx + 1}</span>
                                     </div>
-                                    <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gray-700 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0">
-                                        {(u.username || 'U').charAt(0).toUpperCase()}
+                                    <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gray-700 rounded-full overflow-hidden flex items-center justify-center text-xs font-bold text-white shrink-0">
+                                        {isYou && user?.avatarUrl
+                                            ? <img src={user.avatarUrl} alt={u.username} className="w-full h-full object-cover" />
+                                            : (u.username || 'U').charAt(0).toUpperCase()
+                                        }
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-xs sm:text-sm font-medium text-white truncate">{u.username}</p>

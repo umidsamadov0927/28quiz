@@ -20,42 +20,66 @@ export async function GET(req) {
         await connectDB();
 
         const now = new Date();
-        const todayStart = new Date(now);
-        todayStart.setHours(0, 0, 0, 0);
+        const todayStart = new Date(now); todayStart.setHours(0, 0, 0, 0);
         const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-        const [
-            totalUsers,
-            totalQuestions,
-            activeTodayResult,
-            activeWeekResult,
-            newThisWeekResult,
-            xpSumResult,
-            solvedSumResult,
-            categoryCounts,
-            difficultyRaw,
-        ] = await Promise.all([
-            User.countDocuments({ username: { $ne: 'username' } }),
-            Question.countDocuments(),
-            User.countDocuments({
-                username: { $ne: 'username' },
-                'activity.date': { $gte: todayStart },
-            }),
-            User.countDocuments({
-                username: { $ne: 'username' },
-                'activity.date': { $gte: sevenDaysAgo },
-            }),
-            User.countDocuments({
-                username: { $ne: 'username' },
-                joinedAt: { $gte: sevenDaysAgo },
-            }),
+        // 3 parallel calls instead of 9 — all user counts in a single $group
+        const [userStats, categoryCounts, difficultyRaw] = await Promise.all([
             User.aggregate([
                 { $match: { username: { $ne: 'username' } } },
-                { $group: { _id: null, total: { $sum: '$xp' } } },
-            ]),
-            User.aggregate([
-                { $match: { username: { $ne: 'username' } } },
-                { $group: { _id: null, total: { $sum: '$questionsSolved' } } },
+                {
+                    $group: {
+                        _id: null,
+                        totalUsers:  { $sum: 1 },
+                        totalXp:     { $sum: '$xp' },
+                        totalSolved: { $sum: '$questionsSolved' },
+                        newThisWeek: {
+                            $sum: { $cond: [{ $gte: ['$joinedAt', sevenDaysAgo] }, 1, 0] },
+                        },
+                        activeToday: {
+                            $sum: {
+                                $cond: [
+                                    {
+                                        $gt: [
+                                            {
+                                                $max: {
+                                                    $filter: {
+                                                        input: '$activity',
+                                                        as: 'a',
+                                                        cond: { $gte: ['$$a.date', todayStart] },
+                                                    },
+                                                },
+                                            },
+                                            null,
+                                        ],
+                                    },
+                                    1, 0,
+                                ],
+                            },
+                        },
+                        activeThisWeek: {
+                            $sum: {
+                                $cond: [
+                                    {
+                                        $gt: [
+                                            {
+                                                $max: {
+                                                    $filter: {
+                                                        input: '$activity',
+                                                        as: 'a',
+                                                        cond: { $gte: ['$$a.date', sevenDaysAgo] },
+                                                    },
+                                                },
+                                            },
+                                            null,
+                                        ],
+                                    },
+                                    1, 0,
+                                ],
+                            },
+                        },
+                    },
+                },
             ]),
             Question.aggregate([
                 { $group: { _id: '$category', count: { $sum: 1 } } },
@@ -68,23 +92,25 @@ export async function GET(req) {
             ]),
         ]);
 
-        const totalXp = xpSumResult[0]?.total || 0;
-        const totalSolved = solvedSumResult[0]?.total || 0;
+        const s = userStats[0] || {};
 
         const difficultyDist = { Easy: 0, Medium: 0, Hard: 0 };
         for (const row of difficultyRaw) {
             if (row._id in difficultyDist) difficultyDist[row._id] = row.count;
         }
 
+        // totalQuestions derived from difficultyDist sum (no extra DB call)
+        const totalQuestions = Object.values(difficultyDist).reduce((a, b) => a + b, 0);
+
         return new Response(
             JSON.stringify({
-                totalUsers,
-                activeToday: activeTodayResult,
-                activeThisWeek: activeWeekResult,
-                newThisWeek: newThisWeekResult,
+                totalUsers:     s.totalUsers     || 0,
+                activeToday:    s.activeToday    || 0,
+                activeThisWeek: s.activeThisWeek || 0,
+                newThisWeek:    s.newThisWeek    || 0,
                 totalQuestions,
-                totalXp,
-                totalSolved,
+                totalXp:        s.totalXp        || 0,
+                totalSolved:    s.totalSolved    || 0,
                 categoryCounts,
                 difficultyDist,
             }),

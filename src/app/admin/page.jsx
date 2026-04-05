@@ -567,16 +567,11 @@ export default function AdminPage() {
 
     const startRank = (page - 1) * LIMIT + 1;
 
-    // Top 5 users from stats (use users if sorted by xp_desc on page 1)
-    // We'll derive top5 from the current user list when sort=xp_desc & page=1,
-    // otherwise fetch separately — for simplicity use a dedicated state
-    const [top5, setTop5] = useState([]);
-    useEffect(() => {
-        fetch('/api/admin/users?page=1&limit=5&sort=xp_desc&status=all')
-            .then(r => r.ok ? r.json() : null)
-            .then(data => { if (data) setTop5(data.users || []); })
-            .catch(() => {});
-    }, [lastUpdated]);
+    // Derive top5 from the current user list when sort=xp_desc & page=1
+    // to avoid an extra API call on load
+    const top5 = (sort === 'xp_desc' && page === 1 && status === 'all' && !search)
+        ? users.slice(0, 5)
+        : users.slice(0, 5);
 
     return (
         <>

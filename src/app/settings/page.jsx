@@ -220,6 +220,7 @@ export default function SettingsPage() {
             setUser(u => ({ ...u, avatarUrl: data.avatarUrl }));
             setPendingFile(null);
             setPreviewUrl(null);
+            window.dispatchEvent(new Event('user-updated'));
             showToast('Rasm yuklandi');
         } catch (e) {
             showToast(e.message, 'error');
@@ -237,6 +238,7 @@ export default function SettingsPage() {
             setUser(u => ({ ...u, avatarUrl: null }));
             setPendingFile(null);
             setPreviewUrl(null);
+            window.dispatchEvent(new Event('user-updated'));
             showToast("Rasm o'chirildi");
         } catch {
             showToast("O'chirishda xato", 'error');

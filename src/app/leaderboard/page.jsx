@@ -55,7 +55,7 @@ const PODIUM_CFG = [
     },
 ];
 
-function PodiumCard({ u, cfg, isYou, visible }) {
+function PodiumCard({ u, cfg, isYou, visible, meAvatarUrl }) {
     const level = computeLevel(u?.xp || 0);
     return (
         <div
@@ -76,7 +76,10 @@ function PodiumCard({ u, cfg, isYou, visible }) {
                 className={`relative ${cfg.size} rounded-2xl bg-gradient-to-br ${cfg.gradientFrom} ${cfg.gradientTo} border ${cfg.borderColor} ${cfg.ring} flex items-center justify-center font-extrabold ${cfg.textColor} mb-2`}
                 style={cfg.rank === 1 ? { boxShadow: '0 0 32px rgba(250,204,21,0.2)' } : {}}
             >
-                {(u?.username || 'U').charAt(0).toUpperCase()}
+                {isYou && meAvatarUrl
+                    ? <img src={meAvatarUrl} alt={u?.username} className="w-full h-full object-cover rounded-2xl" />
+                    : (u?.username || 'U').charAt(0).toUpperCase()
+                }
                 {cfg.rank === 1 && (
                     <>
                         <span style={{ animation: 'sparkle1 2s ease-in-out infinite' }} className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full" />
@@ -142,6 +145,7 @@ function Podium({ users, me }) {
                                 cfg={cfg}
                                 isYou={!!(me && me.username === u.username)}
                                 visible={visible}
+                                meAvatarUrl={me?.avatarUrl}
                             />
                         );
                     })}
@@ -158,7 +162,7 @@ const ROW_TOP = [
 ];
 const MEDALS_TBL = ['', '🥇', '🥈', '🥉'];
 
-function UserRow({ u, rank, isYou }) {
+function UserRow({ u, rank, isYou, meAvatarUrl }) {
     const level = computeLevel(u.xp || 0);
     const acc = getAccuracy(u);
     const isTop3 = rank <= 3;
@@ -177,10 +181,13 @@ function UserRow({ u, rank, isYou }) {
                 }
             </div>
 
-            <div className={`w-8 h-8 rounded-xl shrink-0 flex items-center justify-center text-xs font-extrabold
+            <div className={`w-8 h-8 rounded-xl shrink-0 flex items-center justify-center text-xs font-extrabold overflow-hidden
                 ${isTop3 ? s.avatar : isYou ? 'bg-green-900/40 border border-green-700 text-green-400' : 'bg-gray-800 text-white'}`}
             >
-                {(u.username || 'U').charAt(0).toUpperCase()}
+                {isYou && meAvatarUrl
+                    ? <img src={meAvatarUrl} alt={u.username} className="w-full h-full object-cover" />
+                    : (u.username || 'U').charAt(0).toUpperCase()
+                }
             </div>
 
             <div className="flex-1 min-w-0">
@@ -447,6 +454,7 @@ export default function LeaderboardPage() {
                                 u={u}
                                 rank={startRank + i}
                                 isYou={!!(me && me.username === u.username)}
+                                meAvatarUrl={me?.avatarUrl}
                             />
                         ))}
                     </div>

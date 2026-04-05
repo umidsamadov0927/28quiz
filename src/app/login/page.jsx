@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
-import { User, Lock, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
+import { User, Lock, ArrowRight, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginPage() {
@@ -11,6 +11,7 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPass, setShowPass] = useState(false);
     const router = useRouter();
 
     const handleUsernameChange = (e) => {
@@ -93,13 +94,20 @@ export default function LoginPage() {
                                     <Lock size={18} />
                                 </div>
                                 <input
-                                    type="password"
+                                    type={showPass ? 'text' : 'password'}
                                     placeholder="••••••••"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
-                                    className="w-full bg-gray-800 border border-gray-700 text-white pl-11 pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all placeholder:text-gray-600"
+                                    className="w-full bg-gray-800 border border-gray-700 text-white pl-11 pr-11 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all placeholder:text-gray-600"
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPass(p => !p)}
+                                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-300 transition-colors"
+                                >
+                                    {showPass ? <EyeOff size={17} /> : <Eye size={17} />}
+                                </button>
                             </div>
                         </div>
 

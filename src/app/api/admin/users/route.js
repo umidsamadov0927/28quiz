@@ -19,41 +19,33 @@ export async function GET(req) {
         await connectDB();
 
         const { searchParams } = new URL(req.url);
-        const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
-        const limit = Math.max(1, parseInt(searchParams.get('limit') || '15', 10));
+        const page   = Math.max(1, parseInt(searchParams.get('page')  || '1',  10));
+        const limit  = Math.max(1, parseInt(searchParams.get('limit') || '15', 10));
         const search = searchParams.get('search') || '';
-        const sort = searchParams.get('sort') || 'xp_desc';
+        const sort   = searchParams.get('sort')   || 'xp_desc';
         const status = searchParams.get('status') || 'all';
 
         const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-        // Build aggregation pipeline
-        const pipeline = [];
+        // ── Pre-filter pipeline (cheap ops first, then expensive $addFields) ──
+        const pre = [];
 
-        // Step 1: Compute lastActive from activity array
-        pipeline.push({
-            $addFields: {
-                lastActive: { $max: '$activity.date' },
-            },
-        });
+        // 1. Exclude admin FIRST — reduces the set for $addFields
+        pre.push({ $match: { username: { $ne: 'username' } } });
 
-        // Step 2: Exclude admin
-        pipeline.push({ $match: { username: { $ne: 'username' } } });
-
-        // Step 3: Search filter
+        // 2. Search filter — further shrinks the set before $addFields
         if (search.trim()) {
-            pipeline.push({
-                $match: { username: { $regex: search.trim(), $options: 'i' } },
-            });
+            pre.push({ $match: { username: { $regex: search.trim(), $options: 'i' } } });
         }
 
-        // Step 4: Status filter
+        // 3. Compute lastActive only for the filtered docs
+        pre.push({ $addFields: { lastActive: { $max: '$activity.date' } } });
+
+        // 4. Status filter (requires lastActive computed above)
         if (status === 'active') {
-            pipeline.push({
-                $match: { lastActive: { $gte: sevenDaysAgo } },
-            });
+            pre.push({ $match: { lastActive: { $gte: sevenDaysAgo } } });
         } else if (status === 'inactive') {
-            pipeline.push({
+            pre.push({
                 $match: {
                     $or: [
                         { lastActive: { $lt: sevenDaysAgo } },
@@ -64,50 +56,31 @@ export async function GET(req) {
             });
         }
 
-        // Step 5: Sort
-        let sortStage = {};
-        switch (sort) {
-            case 'xp_asc':
-                sortStage = { xp: 1 };
-                break;
-            case 'joined_desc':
-                sortStage = { joinedAt: -1 };
-                break;
-            case 'joined_asc':
-                sortStage = { joinedAt: 1 };
-                break;
-            case 'questions_desc':
-                sortStage = { questionsSolved: -1 };
-                break;
-            case 'xp_desc':
-            default:
-                sortStage = { xp: -1 };
-                break;
-        }
-        pipeline.push({ $sort: sortStage });
+        // ── Sort ──
+        let sortStage = { xp: -1 };
+        if (sort === 'xp_asc')          sortStage = { xp: 1 };
+        else if (sort === 'joined_desc') sortStage = { joinedAt: -1 };
+        else if (sort === 'joined_asc')  sortStage = { joinedAt: 1 };
+        else if (sort === 'questions_desc') sortStage = { questionsSolved: -1 };
 
-        // Step 6: Count total (facet)
-        const countPipeline = [...pipeline, { $count: 'total' }];
-
-        // Step 7: Pagination
-        pipeline.push({ $skip: (page - 1) * limit });
-        pipeline.push({ $limit: limit });
-
-        // Step 8: Project (exclude sensitive/large fields)
-        pipeline.push({
-            $project: {
-                password: 0,
-                dailyChallenges: 0,
-                activity: 0,
+        // ── Single aggregation: count + paginate via $facet ──
+        const [result] = await User.aggregate([
+            ...pre,
+            {
+                $facet: {
+                    count: [{ $count: 'total' }],
+                    data: [
+                        { $sort: sortStage },
+                        { $skip: (page - 1) * limit },
+                        { $limit: limit },
+                        { $project: { password: 0, dailyChallenges: 0, activity: 0 } },
+                    ],
+                },
             },
-        });
-
-        const [users, countResult] = await Promise.all([
-            User.aggregate(pipeline),
-            User.aggregate(countPipeline),
         ]);
 
-        const total = countResult[0]?.total || 0;
+        const users = result?.data || [];
+        const total = result?.count[0]?.total || 0;
 
         return new Response(
             JSON.stringify({ users, total, page, limit }),
