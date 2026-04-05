@@ -12,7 +12,7 @@ export async function DELETE(req) {
     try {
         const cookieHeader = req.headers.get('cookie');
         const session = parseSession(cookieHeader);
-        if (!session || session.username !== 'ad') {
+        if (!session || session.username !== 'username') {
             return new Response(JSON.stringify({ message: 'Forbidden' }), { status: 403 });
         }
 
@@ -26,7 +26,7 @@ export async function DELETE(req) {
         if (!user) {
             return new Response(JSON.stringify({ message: 'Foydalanuvchi topilmadi' }), { status: 404 });
         }
-        if (user.username === 'ad') {
+        if (user.username === 'username') {
             return new Response(JSON.stringify({ message: 'Admin hisobini o\'chirib bo\'lmaydi' }), { status: 403 });
         }
 

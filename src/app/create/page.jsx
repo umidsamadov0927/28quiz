@@ -201,7 +201,7 @@ export default function CreateQuestionPage() {
         if (!raw) { router.push('/login'); return; }
         try {
             const user = JSON.parse(raw);
-            if (user.username !== 'ad') router.push('/');
+            if (user.username !== 'username') router.push('/');
         } catch { router.push('/'); }
     }, [router]);
 

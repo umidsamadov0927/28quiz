@@ -22,7 +22,7 @@ export async function POST(req) {
 
         const cookie = req.headers.get('cookie');
         const session = parseSessionFromCookie(cookie);
-        if (!session || session.username !== 'ad') {
+        if (!session || session.username !== 'username') {
             return new Response(JSON.stringify({ message: 'Forbidden' }), { status: 403 });
         }
 

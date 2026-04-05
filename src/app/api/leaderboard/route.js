@@ -9,7 +9,7 @@ function parseSession(cookieHeader) {
 }
 
 // Usernames hidden from public leaderboard (admin accounts)
-const HIDDEN_USERS = ['ad'];
+const HIDDEN_USERS = ['username'];
 
 export async function GET(req) {
     try {

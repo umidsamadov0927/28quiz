@@ -507,7 +507,7 @@ export default function AdminPage() {
             ]);
             if (!meRes.ok) { router.push('/login'); return; }
             const meData = await meRes.json();
-            if (!meData.user || meData.user.username !== 'ad') {
+            if (!meData.user || meData.user.username !== 'username') {
                 router.push('/dashboard');
                 return;
             }

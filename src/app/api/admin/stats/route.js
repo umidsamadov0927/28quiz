@@ -13,7 +13,7 @@ export async function GET(req) {
     try {
         const cookieHeader = req.headers.get('cookie');
         const session = parseSession(cookieHeader);
-        if (!session || session.username !== 'ad') {
+        if (!session || session.username !== 'username') {
             return new Response(JSON.stringify({ message: 'Forbidden' }), { status: 403 });
         }
 
@@ -35,26 +35,26 @@ export async function GET(req) {
             categoryCounts,
             difficultyRaw,
         ] = await Promise.all([
-            User.countDocuments({ username: { $ne: 'ad' } }),
+            User.countDocuments({ username: { $ne: 'username' } }),
             Question.countDocuments(),
             User.countDocuments({
-                username: { $ne: 'ad' },
+                username: { $ne: 'username' },
                 'activity.date': { $gte: todayStart },
             }),
             User.countDocuments({
-                username: { $ne: 'ad' },
+                username: { $ne: 'username' },
                 'activity.date': { $gte: sevenDaysAgo },
             }),
             User.countDocuments({
-                username: { $ne: 'ad' },
+                username: { $ne: 'username' },
                 joinedAt: { $gte: sevenDaysAgo },
             }),
             User.aggregate([
-                { $match: { username: { $ne: 'ad' } } },
+                { $match: { username: { $ne: 'username' } } },
                 { $group: { _id: null, total: { $sum: '$xp' } } },
             ]),
             User.aggregate([
-                { $match: { username: { $ne: 'ad' } } },
+                { $match: { username: { $ne: 'username' } } },
                 { $group: { _id: null, total: { $sum: '$questionsSolved' } } },
             ]),
             Question.aggregate([

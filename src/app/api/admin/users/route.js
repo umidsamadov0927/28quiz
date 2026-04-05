@@ -12,7 +12,7 @@ export async function GET(req) {
     try {
         const cookieHeader = req.headers.get('cookie');
         const session = parseSession(cookieHeader);
-        if (!session || session.username !== 'ad') {
+        if (!session || session.username !== 'username') {
             return new Response(JSON.stringify({ message: 'Forbidden' }), { status: 403 });
         }
 
@@ -38,7 +38,7 @@ export async function GET(req) {
         });
 
         // Step 2: Exclude admin
-        pipeline.push({ $match: { username: { $ne: 'ad' } } });
+        pipeline.push({ $match: { username: { $ne: 'username' } } });
 
         // Step 3: Search filter
         if (search.trim()) {
