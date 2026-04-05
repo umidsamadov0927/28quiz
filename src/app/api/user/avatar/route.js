@@ -1,5 +1,3 @@
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
 import { connectDB } from '../../config/mongodb.js';
 import { User } from '../../models/User.js';
 
@@ -37,23 +35,20 @@ export async function POST(req) {
             return new Response(JSON.stringify({ message: 'Fayl hajmi 2MB dan oshmasligi kerak' }), { status: 400 });
         }
 
+        // Convert to base64 data URL — stored directly in MongoDB, no filesystem needed
+        const base64 = Buffer.from(bytes).toString('base64');
+        const avatarUrl = `data:${file.type};base64,${base64}`;
+
         await connectDB();
-        const user = await User.findOne({ username: session.username });
+        const user = await User.findOneAndUpdate(
+            { username: session.username },
+            { avatarUrl },
+            { new: true }
+        );
+
         if (!user) {
             return new Response(JSON.stringify({ message: 'Foydalanuvchi topilmadi' }), { status: 404 });
         }
-
-        const ext = file.type.split('/')[1].replace('jpeg', 'jpg');
-        const filename = `${user._id}.${ext}`;
-        const avatarsDir = path.join(process.cwd(), 'public', 'avatars');
-
-        await mkdir(avatarsDir, { recursive: true });
-        await writeFile(path.join(avatarsDir, filename), Buffer.from(bytes));
-
-        // append timestamp so browsers don't serve stale cached version
-        const avatarUrl = `/avatars/${filename}?v=${Date.now()}`;
-        user.avatarUrl = avatarUrl;
-        await user.save();
 
         return new Response(
             JSON.stringify({ avatarUrl }),
@@ -61,7 +56,7 @@ export async function POST(req) {
         );
     } catch (error) {
         console.error('Avatar upload error:', error);
-        return new Response(JSON.stringify({ message: 'Server xatosi' }), { status: 500 });
+        return new Response(JSON.stringify({ message: 'Server xatosi: ' + error.message }), { status: 500 });
     }
 }
 
