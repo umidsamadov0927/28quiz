@@ -25,27 +25,46 @@ export default function LoginPage() {
         setError('');
         setLoading(true);
 
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 12000);
+
         try {
             const response = await fetch('/api/auth/signin', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify({ username, password }),
+                signal: controller.signal,
             });
+            clearTimeout(timer);
 
             const data = await response.json();
 
             if (response.ok) {
-                Cookies.set('session_token', JSON.stringify(data.user), { expires: 1 });
-                setTimeout(() => {
-                    router.push('/');
-                    router.refresh();
-                }, 100);
+                Cookies.set(
+                    'session_token',
+                    JSON.stringify({
+                        id: data.user._id,
+                        username: data.user.username,
+                    }),
+                    {
+                        expires: 1,
+                        path: '/',
+                    }
+                );
+
+                setLoading(false);
+                router.replace('/dashboard');
             } else {
                 setError(data.message || 'Kirishda xatolik yuz berdi');
                 setLoading(false);
             }
         } catch (err) {
-            setError('Tarmoq xatosi: ' + err.message);
+            clearTimeout(timer);
+            if (err.name === 'AbortError') {
+                setError('Server javob bermadi. MongoDB ulanishini tekshiring.');
+            } else {
+                setError('Tarmoq xatosi: ' + err.message);
+            }
             setLoading(false);
         }
     };

@@ -41,15 +41,15 @@ export default function SignUpPage() {
             }
         }
 
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 15000);
+
         try {
             const signupResponse = await fetch('/api/auth/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    username, 
-                    password, 
-                    email: email || undefined,
-                }),
+                body: JSON.stringify({ username, password, email: email || undefined }),
+                signal: controller.signal,
             });
 
             const signupData = await signupResponse.json();
@@ -59,22 +59,39 @@ export default function SignUpPage() {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password }),
+                    signal: controller.signal,
                 });
 
                 const signinData = await signinResponse.json();
+                clearTimeout(timer);
 
                 if (signinResponse.ok) {
-                    Cookies.set('session_token', JSON.stringify(signinData.user), { expires: 1 });
-                    router.push('/');
-                    router.refresh();
+                    Cookies.set(
+                        'session_token',
+                        JSON.stringify({
+                            id: signinData.user._id,
+                            username: signinData.user.username,
+                        }),
+                        {
+                            expires: 1,
+                            path: '/',
+                        }
+                    );
+                    router.push('/dashboard');
                 } else {
                     setError(signinData.message || 'Avtomatik kirishda xatolik');
                 }
             } else {
+                clearTimeout(timer);
                 setError(signupData.message || 'Ro\'yxatdan o\'tishda xatolik yuz berdi');
             }
         } catch (err) {
-            setError('Tarmoq xatosi: ' + err.message);
+            clearTimeout(timer);
+            if (err.name === 'AbortError') {
+                setError('Server javob bermadi. Qayta urinib ko\'ring.');
+            } else {
+                setError('Tarmoq xatosi: ' + err.message);
+            }
         } finally {
             setLoading(false);
         }

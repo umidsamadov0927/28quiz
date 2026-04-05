@@ -26,11 +26,13 @@ export async function GET(req) {
 
         const cookieHeader = req.headers.get('cookie');
         const session = parseSessionFromCookie(cookieHeader);
-        if (!session || !session.username) {
+
+        if (!session || !session.id) {
             return new Response(JSON.stringify({ message: 'Not authenticated' }), { status: 401 });
         }
 
-        const user = await User.findOne({ username: session.username }).select('-password');
+        const user = await User.findById(session.id).select('-password');
+
         if (!user) {
             return new Response(JSON.stringify({ message: 'User not found' }), { status: 404 });
         }
