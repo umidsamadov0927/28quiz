@@ -122,8 +122,7 @@ export default function Sidebar({ isExpanded }) {
                     </div>
                     {isExpanded && (
                         <div>
-                            <p className="font-bold text-base text-white m-0 leading-tight">DMS Portal</p>
-                            <p className="text-xs text-gray-500 m-0">Dealer Management</p>
+                            <p className="font-bold text-base text-white m-0 leading-tight">DevQuiz</p>
                         </div>
                     )}
                 </div>

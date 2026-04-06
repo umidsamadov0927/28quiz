@@ -286,7 +286,7 @@ export default function QuizCategoryPage() {
     const [answered, setAnswered]   = useState(false);
     const [quizLoading, setQuizLoading] = useState(false);
     const [showResults, setShowResults] = useState(false);
-    const countsRef = useRef({ correct: 0, incorrect: 0, unanswered: 0 });
+    const countsRef = useRef({ correct: 0, incorrect: 0, unanswered: 0, xpEarned: 0 });
     const [timeLeft, setTimeLeft] = useState(null);
     const timerRef = useRef(null);
 
@@ -336,7 +336,7 @@ export default function QuizCategoryPage() {
                 setQuestions(data.questions || []);
             }
         } catch (e) { console.error(e); }
-        countsRef.current = { correct: 0, incorrect: 0, unanswered: 0 };
+        countsRef.current = { correct: 0, incorrect: 0, unanswered: 0, xpEarned: 0 };
         setIndex(0);
         setSelected(null);
         setAnswered(false);
@@ -361,7 +361,7 @@ export default function QuizCategoryPage() {
         }
         const correct = selected === current.correctAnswer;
         const xpReward = correct ? (current.xpReward || 0) : 0;
-        if (correct) countsRef.current.correct += 1;
+        if (correct) { countsRef.current.correct += 1; countsRef.current.xpEarned += xpReward; }
         else countsRef.current.incorrect += 1;
 
         // fire-and-forget — don't block UI on network round-trip
@@ -406,11 +406,11 @@ export default function QuizCategoryPage() {
     // ── stats ─────────────────────────────────────────────────
     const dc = useMemo(() => {
         const counts = { Easy: 0, Medium: 0, Hard: 0 };
-        allQuestions.forEach(q => { if (q.difficulty in counts) counts[q.difficulty]++; });
+        filteredQuestions.forEach(q => { if (q.difficulty in counts) counts[q.difficulty]++; });
         return counts;
-    }, [allQuestions]);
+    }, [filteredQuestions]);
 
-    const totalXp = allQuestions.reduce((s, q) => s + (q.xpReward || 0), 0);
+    const totalXp = filteredQuestions.reduce((s, q) => s + (q.xpReward || 0), 0);
     const { icon: Icon, color, bg, border } = getCategoryStyle(category);
 
     // ── RESULTS ───────────────────────────────────────────────
@@ -421,6 +421,7 @@ export default function QuizCategoryPage() {
                 correctAnswers={countsRef.current.correct}
                 incorrectAnswers={countsRef.current.incorrect}
                 unanswered={countsRef.current.unanswered}
+                earnedXp={countsRef.current.xpEarned}
                 category={category}
                 onRetry={handleRetry}
                 onHome={() => { setMode('library'); router.push('/quiz'); }}
@@ -544,6 +545,21 @@ export default function QuizCategoryPage() {
                         </div>
 
                         <div className="mt-4 flex items-center justify-between gap-3">
+                            <button
+                                onClick={() => {
+                                    if (index > 0) {
+                                        setIndex(index - 1);
+                                        setSelected(null);
+                                        setAnswered(false);
+                                    } else {
+                                        setMode('library');
+                                    }
+                                }}
+                                className="flex items-center gap-2 rounded-xl px-4 sm:px-6 py-3 sm:py-3.5 font-semibold text-gray-400 text-sm sm:text-base bg-gray-800 hover:bg-gray-700 hover:text-white transition-all duration-200 hover:scale-[1.02] shrink-0"
+                            >
+                                <ArrowLeft className="w-4 h-4" />
+                                <span className="hidden sm:inline">Orqaga</span>
+                            </button>
                             <div className="hidden sm:flex items-center gap-1">
                                 {Array.from({ length: Math.min(total, 10) }, (_, i) => (
                                     <div key={i} className={`rounded-full transition-all duration-300 ${
@@ -556,7 +572,7 @@ export default function QuizCategoryPage() {
                             </div>
                             <button
                                 onClick={handleNext}
-                                className={`ml-auto flex items-center gap-2 rounded-xl px-5 sm:px-7 py-3 sm:py-3.5 font-semibold text-white text-sm sm:text-base
+                                className={`flex items-center gap-2 rounded-xl px-5 sm:px-7 py-3 sm:py-3.5 font-semibold text-white text-sm sm:text-base
                                     transition-all duration-200 hover:scale-[1.02]
                                     ${isLastQ
                                         ? 'bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 shadow-lg shadow-green-900/30'

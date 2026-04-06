@@ -75,15 +75,14 @@ export default function ResultsSummary({
     correctAnswers,
     incorrectAnswers,
     unanswered,
+    earnedXp = 0,
     category,
     onRetry,
     onHome,
 }) {
     const percentage = totalQuestions > 0
-        ? Math.round((correctAnswers / totalQuestions) * 100)
+        ? Math.min(100, Math.round((correctAnswers / totalQuestions) * 100))
         : 0;
-
-    const earnedXp = correctAnswers * 10; // approximate
 
     return (
         <div className="flex min-h-screen flex-col items-center bg-gray-950 px-4 py-12">
@@ -158,7 +157,7 @@ export default function ResultsSummary({
                         <X className="h-5 w-5 text-red-400 shrink-0" />
                         <p className="text-sm text-red-300">
                             <span className="font-bold text-red-400">{incorrectAnswers} ta</span> savolga noto'g'ri javob berdingiz
-                            {' '}— bu <span className="font-bold text-red-400">{Math.round((incorrectAnswers / totalQuestions) * 100)}%</span>
+                            {' '}— bu <span className="font-bold text-red-400">{Math.min(100, Math.round((incorrectAnswers / totalQuestions) * 100))}%</span>
                         </p>
                     </div>
                 )}
@@ -176,7 +175,7 @@ export default function ResultsSummary({
                         { label: "Noto'g'ri", count: incorrectAnswers, color: "bg-red-500", textColor: "text-red-400" },
                         { label: "Bo'sh", count: unanswered, color: "bg-gray-600", textColor: "text-gray-400" },
                     ].map(({ label, count, color, textColor }) => {
-                        const pct = totalQuestions > 0 ? Math.round((count / totalQuestions) * 100) : 0;
+                        const pct = totalQuestions > 0 ? Math.min(100, Math.round((count / totalQuestions) * 100)) : 0;
                         return (
                             <div key={label}>
                                 <div className="flex items-center justify-between mb-1">
